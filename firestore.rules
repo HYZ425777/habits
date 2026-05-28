@@ -1,0 +1,93 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Safety Net (default deny)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper Functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Entity Validations
+    function isValidProfile(p) {
+      return p.displayName is string && p.displayName.size() <= 100
+        && p.photoURL is string && p.photoURL.size() <= 1000
+        && p.gold is int && p.gold >= 0
+        && p.xp is int && p.xp >= 0
+        && p.level is int && p.level >= 1
+        && p.streak is int && p.streak >= 0
+        && p.lastActiveDate is string && p.lastActiveDate.size() <= 40
+        && p.equippedRod is string && p.equippedRod.size() <= 100
+        && p.selectedZone is string && p.selectedZone.size() <= 100
+        && p.purchasedRods is list && p.purchasedRods.size() <= 50;
+    }
+
+    function isValidHabit(h) {
+      return h.title is string && h.title.size() <= 200
+        && h.category is string && h.category.size() <= 50
+        && h.rewardXp is int && h.rewardXp >= 0
+        && h.rewardGold is int && h.rewardGold >= 0
+        && h.bonusText is string && h.bonusText.size() <= 200
+        && h.completed is bool
+        && h.lastUpdated is string && h.lastUpdated.size() <= 45;
+    }
+
+    function isValidFish(f) {
+      return f.name is string && f.name.size() <= 100
+        && f.rarity is string && f.rarity.size() <= 50
+        && f.levelRequired is int && f.levelRequired >= 0
+        && f.caught is bool
+        && f.count is int && f.count >= 0;
+    }
+
+    function isValidLog(l) {
+      return l.type is string && l.type.size() <= 50
+        && l.message is string && l.message.size() <= 500
+        && l.timestamp is string && l.timestamp.size() <= 45;
+    }
+
+    // Profile Rules
+    match /profiles/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidId(userId) && isValidProfile(request.resource.data);
+      allow update: if isOwner(userId) && isValidProfile(request.resource.data);
+      allow delete: if false;
+
+      // Habits Subcollection Rules
+      match /habits/{habitId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(habitId) && isValidHabit(request.resource.data);
+        allow update: if isOwner(userId) && isValidHabit(request.resource.data);
+        allow delete: if false;
+      }
+
+      // Codex Subcollection Rules
+      match /codex/{fishId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(fishId) && isValidFish(request.resource.data);
+        allow update: if isOwner(userId) && isValidFish(request.resource.data);
+        allow delete: if false;
+      }
+
+      // Logs Subcollection Rules
+      match /logs/{logId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(logId) && isValidLog(request.resource.data);
+        allow update: if false;
+        allow delete: if false;
+      }
+    }
+  }
+}

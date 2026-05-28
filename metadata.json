@@ -1,0 +1,6 @@
+{
+  "name": "The Grand Angler's Codex",
+  "description": "A mobile-first, gamified daily habits app that transforms healthy routines into a deep-sea fishing RPG quest with state persistence and Google Authentication.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

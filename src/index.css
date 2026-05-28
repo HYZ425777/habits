@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Noto Serif", Georgia, serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+/* Base customized theme elements styled for RPG immersion */
+body {
+  background-color: #0c1322;
+  background-image: 
+    radial-gradient(circle at 50% -10%, #1e2e4a 0%, transparent 60%),
+    radial-gradient(circle at 80% 50%, #0f172a 0%, transparent 40%);
+  min-height: 100vh;
+}
+
+/* Glowing connector elements */
+.water-trail {
+  background: linear-gradient(to bottom, #44e2cd 0%, #2DD4BF 50%, #004d44 100%);
+  filter: blur(4.5px);
+  box-shadow: 0 0 15px rgba(68, 226, 205, 0.45);
+}
+
+/* Semi-transparent submerged surface structures */
+.glass-card {
+  background: rgba(25, 31, 47, 0.85); /* surface-container */
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(185, 199, 228, 0.18); /* primary/18 */
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  border-color: rgba(68, 226, 205, 0.35);
+}
+
+.zone-glow-calm { box-shadow: 0 0 30px rgba(185, 199, 228, 0.15); }
+.zone-glow-river { box-shadow: 0 0 30px rgba(68, 226, 205, 0.18); }
+.zone-glow-mirror { box-shadow: 0 0 30px rgba(249, 189, 34, 0.15); }
+
+@keyframes ripple {
+  0% { transform: scale(1); opacity: 0.4; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+.ripple-effect::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 2px solid rgba(68, 226, 205, 0.45);
+  border-radius: inherit;
+  animation: ripple 2.8s infinite ease-out;
+}
+
+/* Active pressed shrink feedback transitions */
+.active-tap {
+  transition: transform 100ms cubic-bezier(0.4, 0, 0.2, 1), filter 100ms;
+}
+
+.active-tap:active {
+  transform: scale(0.95);
+  filter: brightness(1.15);
+}
+
+.material-icons-glow {
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+/* Hide standard scrollbars for a console-like app container feel */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.1);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(68, 226, 205, 0.3);
+  border-radius: 99px;
+}

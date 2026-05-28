@@ -1,0 +1,154 @@
+{
+  "entities": {
+    "profile": {
+      "title": "Player Profile",
+      "description": "Contains user RPG metrics, settings, currency, and state.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "description": "The user's Google display name."
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "The user's profile image URL."
+        },
+        "gold": {
+          "type": "integer",
+          "description": "Total coins in gold currency."
+        },
+        "xp": {
+          "type": "integer",
+          "description": "Total experience points gained."
+        },
+        "level": {
+          "type": "integer",
+          "description": "Player character level."
+        },
+        "streak": {
+          "type": "integer",
+          "description": "Consecutive days active."
+        },
+        "lastActiveDate": {
+          "type": "string",
+          "description": "ISO string of the last active day."
+        },
+        "equippedRod": {
+          "type": "string",
+          "description": "Currently selected and active rod name."
+        },
+        "purchasedRods": {
+          "type": "array",
+          "description": "List of rod IDs purchased by the user."
+        },
+        "selectedZone": {
+          "type": "string",
+          "description": "Currently active exploring map zone."
+        }
+      },
+      "required": ["displayName", "photoURL", "gold", "xp", "level", "streak", "lastActiveDate", "equippedRod", "purchasedRods", "selectedZone"]
+    },
+    "habit": {
+      "title": "Daily Habit Tracker",
+      "description": "A daily quest associated with fitness, clarity, or fishing skill.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Name of the habit."
+        },
+        "category": {
+          "type": "string",
+          "description": "Category: Health, Mind, Knowledge, or Technique."
+        },
+        "rewardXp": {
+          "type": "integer",
+          "description": "XP reward upon completion."
+        },
+        "rewardGold": {
+          "type": "integer",
+          "description": "Gold reward upon completion."
+        },
+        "bonusText": {
+          "type": "string",
+          "description": "Stat bonus descriptor."
+        },
+        "completed": {
+          "type": "boolean",
+          "description": "Whether completed for today."
+        },
+        "lastUpdated": {
+          "type": "string",
+          "description": "ISO timestamp of last check state change."
+        }
+      },
+      "required": ["title", "category", "rewardXp", "rewardGold", "bonusText", "completed", "lastUpdated"]
+    },
+    "fish": {
+      "title": "Codex Fish Entry",
+      "description": "A species caught by the user to catalog inside their Codex.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Species name."
+        },
+        "rarity": {
+          "type": "string",
+          "description": "Common, Rare, Epic, or Legendary."
+        },
+        "levelRequired": {
+          "type": "integer",
+          "description": "Level needed to catch."
+        },
+        "caught": {
+          "type": "boolean",
+          "description": "Whether the user has caught this species."
+        },
+        "count": {
+          "type": "integer",
+          "description": "Number of times caught."
+        }
+      },
+      "required": ["name", "rarity", "levelRequired", "caught", "count"]
+    },
+    "log": {
+      "title": "Adventure Log Book",
+      "description": "A chronological record of user progression milestones.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Type of event: habit, catch, purchase, or travel."
+        },
+        "message": {
+          "type": "string",
+          "description": "User visible descriptive log sentence."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "ISO format string of when it happened."
+        }
+      },
+      "required": ["type", "message", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/profiles/{userId}": {
+      "schema": "profile",
+      "description": "The central user profile containing account metrics."
+    },
+    "/profiles/{userId}/habits/{habitId}": {
+      "schema": "habit",
+      "description": "Collection of daily habits tracked by the player."
+    },
+    "/profiles/{userId}/codex/{fishId}": {
+      "schema": "fish",
+      "description": "Collection of caught and uncaught codex fish entries."
+    },
+    "/profiles/{userId}/logs/{logId}": {
+      "schema": "log",
+      "description": "Milestones and logs of accomplishments."
+    }
+  }
+}
