@@ -1039,7 +1039,7 @@
                 </div>
               )}
 
-              <!-- Toast notification popups -->
+              {/* Toast notification popups */}
               <div className="absolute top-20 left-4 right-4 z-50 pointer-events-none flex flex-col gap-2">
                 {toasts.map(t => (
                   <div key={t.id} className="pointer-events-auto bg-[#121a2e]/95 backdrop-blur-xl border border-[#44e2cd]/50 shadow-[0_10px_35px_rgba(0,0,0,0.5)] p-4 rounded-xl flex justify-between items-center gap-3 relative overflow-hidden transition-all duration-300">
@@ -1053,7 +1053,7 @@
                 ))}
               </div>
 
-              <!-- Tactile Application Tab Bottom Bar -->
+              {/* Tactile Application Tab Bottom Bar */}
               <nav className="absolute bottom-0 left-0 right-0 h-22 bg-[#0c1322]/95 backdrop-blur-2xl border-t border-[#44e2cd]/15 flex justify-around items-stretch select-none pb-4 z-40">
                 <button onClick={() => setActiveTab('home')} className={`flex-1 flex flex-col items-center justify-center transition-all ${activeTab === 'home' ? 'text-[#44e2cd] bg-[#44e2cd]/5 border-t-2 border-[#44e2cd]' : 'text-[#c5c6cd]'}`} style={{ minWidth: '44px', minHeight: '44px' }}>
                   <span className="material-symbols-outlined text-2xl">home</span>
