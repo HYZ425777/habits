@@ -8,10 +8,1088 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
     <!-- Adventure Headings paired with clean high-contrast sans elements -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Serif:ital,wght@0,600;0,700;1,600&amp;display=swap" rel="stylesheet"/>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              serif: ["'Noto Serif'", 'Georgia', 'serif'],
+              sans: ["'Inter'", 'system-ui', 'sans-serif'],
+            }
+          }
+        }
+      }
+    </script>
+    
+    <!-- Babel standalone for in-browser JSX parsing -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Custom inline styles extracted from index.css -->
+    <style>
+      body {
+        background-color: #0c1322;
+        background-image: 
+          radial-gradient(circle at 50% -10%, #1e2e4a 0%, transparent 60%),
+          radial-gradient(circle at 80% 50%, #0f172a 0%, transparent 40%);
+        min-height: 100vh;
+      }
+      .water-trail {
+        background: linear-gradient(to bottom, #44e2cd 0%, #2DD4BF 50%, #004d44 100%);
+        filter: blur(4.5px);
+        box-shadow: 0 0 15px rgba(68, 226, 205, 0.45);
+      }
+      .glass-card {
+        background: rgba(25, 31, 47, 0.85);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(185, 199, 228, 0.18);
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .glass-card:hover { border-color: rgba(68, 226, 205, 0.35); }
+      .zone-glow-calm { box-shadow: 0 0 30px rgba(185, 199, 228, 0.15); }
+      .zone-glow-river { box-shadow: 0 0 30px rgba(68, 226, 205, 0.18); }
+      .zone-glow-mirror { box-shadow: 0 0 30px rgba(249, 189, 34, 0.15); }
+      @keyframes ripple {
+        0% { transform: scale(1); opacity: 0.4; }
+        100% { transform: scale(1.4); opacity: 0; }
+      }
+      .ripple-effect::after {
+        content: ''; position: absolute; width: 100%; height: 100%;
+        border: 2px solid rgba(68, 226, 205, 0.45); border-radius: inherit;
+        animation: ripple 2.8s infinite ease-out;
+      }
+      .active-tap { transition: transform 100ms cubic-bezier(0.4, 0, 0.2, 1), filter 100ms; }
+      .active-tap:active { transform: scale(0.95); filter: brightness(1.15); }
+      ::-webkit-scrollbar { width: 4px; }
+      ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+      ::-webkit-scrollbar-thumb { background: rgba(68, 226, 205, 0.3); border-radius: 99px; }
+    </style>
   </head>
   <body class="bg-[#0c1322] text-[#dce2f7] antialiased">
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Compile code securely through web-native module CDN imports -->
+    <script type="text/babel" data-type="module">
+      import React, { useState, useEffect, useRef, createContext, useContext } from "https://esm.sh/react@19";
+      import { createRoot } from "https://esm.sh/react-dom@19/client";
+      import { 
+        Compass, BookOpen, ShoppingBag, CheckSquare, LogOut, LogIn, Waves, Lock, Skull, Zap, CloudRain, Award, Coins, Anchor, Info, X, Play,
+        Pause, RotateCcw, ChevronDown, ChevronUp, Music, Check, Flame, Sparkles, Droplet, Trophy, HelpCircle
+      } from "https://esm.sh/lucide-react@0.468.0";
+
+      // Firebase imports directly sourced from standard Google web browser CDN module links
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+      import { getAuth, signInWithPopup, signOut as fbSignOut, onAuthStateChanged, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+      import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, onSnapshot, increment } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+      // -------------------------------------------------------------
+      // CORE CONFIGURATION & CONSTANTS
+      // -------------------------------------------------------------
+      const firebaseConfig = {
+        apiKey: "AIzaSyAkbqRM_iE0A63Zw1RJ31i41cHsGg3yOgg",
+        authDomain: "exalted-osprey-mjlsj.firebaseapp.com",
+        projectId: "exalted-osprey-mjlsj",
+        storageBucket: "exalted-osprey-mjlsj.firebasestorage.app",
+        messagingSenderId: "186218654031",
+        appId: "1:186218654031:web:dd1c6fb9b71083cc633d3a",
+        databaseId: "ai-studio-55cfc780-366b-42f7-a46f-5f6a708fa60d"
+      };
+
+      // Lazy Firebase initialization
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+      const googleProvider = new GoogleAuthProvider();
+      const isFirebaseConfigured = true;
+
+      const DEFAULT_HABITS = [
+        { id: 'sleep-8-hours', title: 'Sleep 8 Hours', category: 'Health', rewardXp: 50, rewardGold: 25, bonusText: '+50 XP | +5% Catch Rate', completed: false, lastUpdated: '' },
+        { id: 'hydration-2l', title: 'Hydration (2L)', category: 'Health', rewardXp: 25, rewardGold: 15, bonusText: '+25 XP | Boosts Stamina', completed: false, lastUpdated: '' },
+        { id: 'meditation', title: 'Meditation', category: 'Mind', rewardXp: 40, rewardGold: 20, bonusText: 'Crit Chance Boost (+10%)', completed: false, lastUpdated: '' },
+        { id: 'daily-journaling', title: 'Daily Journaling', category: 'Mind', rewardXp: 30, rewardGold: 15, bonusText: '+30 XP | Focus Clarity', completed: false, lastUpdated: '' },
+        { id: 'study-session', title: 'Study Session (30m)', category: 'Knowledge', rewardXp: 45, rewardGold: 20, bonusText: 'Rare Fish Spotting Unlock', completed: false, lastUpdated: '' },
+        { id: 'pattern-analysis', title: 'Pattern Analysis', category: 'Knowledge', rewardXp: 45, rewardGold: 20, bonusText: '+45 XP | Prediction Bonus', completed: false, lastUpdated: '' },
+        { id: 'skill-practice', title: 'Skill Practice', category: 'Technique', rewardXp: 60, rewardGold: 30, bonusText: '+10% Landing Zone Size', completed: false, lastUpdated: '' }
+      ];
+
+      const ALL_FISH_SPECIES = [
+        { id: 'lazy-carp', name: 'Lazy Carp', rarity: 'Common', levelRequired: 1, caught: false, count: 0, zone: 'Calm Lake', image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/lazy_carp_1779419420715.png' },
+        { id: 'bluegil-scout', name: 'Bluegil Scout', rarity: 'Common', levelRequired: 2, caught: false, count: 0, zone: 'Calm Lake', image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/bluegil_scout_1779419437348.png' },
+        { id: 'zig-zag-trout', name: 'Zig-Zag Trout', rarity: 'Common', levelRequired: 4, caught: false, count: 0, zone: 'Calm Lake', image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/zig_zag_trout_1779419457736.png' },
+        { id: 'river-minnow-swarm', name: 'River Minnow Swarm', rarity: 'Common', levelRequired: 6, caught: false, count: 0, zone: 'Calm Lake', image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/minnow_swarm_1779419476424.png' },
+        { id: 'phantom-eel', name: 'Phantom Eel', rarity: 'Rare', levelRequired: 11, caught: false, count: 0, zone: 'Restless River', image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/phantom_eel_1779419503847.png' },
+        { id: 'spiked-barracuda', name: 'Spiked Barracuda', rarity: 'Rare', levelRequired: 15, caught: false, count: 0, zone: 'Restless River', image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/spiked_barracuda_1779419521204.png' },
+        { id: 'stormfin-tuna', name: 'Stormfin Tuna', rarity: 'Rare', levelRequired: 20, caught: false, count: 0, zone: 'Restless River', image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/stormfin_tuna_1779419541058.png' },
+        { id: 'ripple-eel', name: 'Ripple Eel', rarity: 'Epic', levelRequired: 26, caught: false, count: 0, zone: 'Mirror Lake', image: 'https://images.unsplash.com/photo-1518156677180-95a2893f3e9f?q=80&w=400&auto=format&fit=crop' },
+        { id: 'tempestfin-tuna', name: 'Tempestfin Tuna', rarity: 'Epic', levelRequired: 32, caught: false, count: 0, zone: 'Mirror Lake', image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=400&auto=format&fit=crop' },
+        { id: 'abyssal-serpent', name: 'Abyssal Serpent', rarity: 'Epic', levelRequired: 41, caught: false, count: 0, zone: 'Deep Sea', image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/abyssal_serpent_1779418779643.png' },
+        { id: 'celestial-fury', name: 'Celestial Fury', rarity: 'Legendary', levelRequired: 48, caught: false, count: 0, zone: 'Deep Sea', image: 'https://images.unsplash.com/photo-1464802686167-b939a6910659?q=80&w=400&auto=format&fit=crop' },
+        { id: 'the-leviathan', name: 'The Leviathan', rarity: 'Legendary', levelRequired: 61, caught: false, count: 0, zone: 'The Abyss', image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/the_leviathan_1779418712223.png' },
+        { id: 'chrono-fish', name: 'Chrono Fish', rarity: 'Legendary', levelRequired: 75, caught: false, count: 0, zone: 'The Abyss', image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/chrono_fish_1779418733795.png' }
+      ];
+
+      const SHOP_ITEMS = [
+        { id: 'basic-driftwood-rod', name: 'Basic Driftwood Rod', category: 'RODS', rarity: 'Common', price: 150, description: 'Your very first humble wooden fishing rod.', statModifier: '+0% Catch Rate', unlocked: true, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/basic_rod_1779419084122.png' },
+        { id: 'steel-reinforced-rod', name: 'Steel Reinforced Rod', category: 'RODS', rarity: 'Common', price: 600, description: 'Heavy steel reinforced spine dependable in rough currents.', statModifier: '+10% Area Size', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/reinforced_rod_1779419104601.png' },
+        { id: 'deep-sea-whisperer', name: 'Deep Sea Whisperer', category: 'RODS', rarity: 'Rare', price: 1850, description: 'An advanced turquoise graphite carbon fiber high depth rod.', statModifier: '+30% Catch Rate', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/ocean_rod_1779419124563.png' },
+        { id: 'mythic-celestial-rod', name: 'Mythic Celestial Rod', category: 'RODS', rarity: 'Legendary', price: 5500, description: 'Pulsing with raw celestial energy. Attracts legendary leviathans.', statModifier: '+45% Catch Rate', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/mythic_celestial_rod_1779418670737.png' },
+        { id: 'worm-bait', name: 'Worm Bait', category: 'BAIT', rarity: 'Common', price: 80, description: 'Fresh juicy earthworms irresistible to shallow lake species.', statModifier: '+5% Catch Rate', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/worm_bait_1779419476424.png' },
+        { id: 'seahorse-lure', name: 'Seahorse Lure', category: 'BAIT', rarity: 'Rare', price: 350, description: 'A glowing seahorse decoy that mimics bioluminescent deep-sea food.', statModifier: '+15% Rare Chance', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/seahorse_lure_1779419157958.png' },
+        { id: 'basic-vest', name: 'Basic Vest', category: 'GEAR', rarity: 'Common', price: 250, description: 'Comfortable tan pocketed vest designed for starting out.', statModifier: '+5% XP Gains', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/basic_vest_1779419178600.png' },
+        { id: 'utility-vest', name: 'Utility Vest', category: 'GEAR', rarity: 'Common', price: 800, description: 'A canvas army green vest with deep double-stitched pockets.', statModifier: '+10% XP Gains', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/utility_vest_1779419194362.png' },
+        { id: 'elite-vest', name: 'Elite Vest', category: 'GEAR', rarity: 'Epic', price: 2200, description: 'High-tech navy polymer composite vest tailored for veterans.', statModifier: '+20% XP Gains', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/elite_vest_1779419214726.png' },
+        { id: 'straw-hat-e2c17', name: 'Straw Hat E2C17', category: 'GEAR', rarity: 'Common', price: 200, description: 'Classic rustic woven straw hat offering perfect sun protection.', statModifier: '+5% Stamina Recover', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/straw_hat_1779419238062.png' },
+        { id: 'angler-cap', name: 'Angler Cap', category: 'GEAR', rarity: 'Common', price: 500, description: 'A sturdy athletic blue baseball cap with custom fish logotype.', statModifier: '+10% Zone Size', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/angler_cap_1779419255551.png' },
+        { id: 'legendary-hat', name: 'Legendary Hat', category: 'GEAR', rarity: 'Legendary', price: 3500, description: 'Intricately stitched felt fedora pulsing with a cyan aura.', statModifier: '+25% Reel Control', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/legendary_hat_1779419271294.png' },
+        { id: 'fishing-gloves', name: 'Fishing Gloves', category: 'ACCESSORIES', rarity: 'Common', price: 450, description: 'Grip-reinforced dark leather fingerless gear protecting hands.', statModifier: '+10% Reel Grip', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/fishing_gloves_1779419287838.png' },
+        { id: 'tackle-backpack', name: 'Tackle Backpack', category: 'ACCESSORIES', rarity: 'Common', price: 1000, description: 'Durable brown heavy rucksack with triple gear straps.', statModifier: '+10% Bag Space', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/tackle_backpack_1779419304057.png' },
+        { id: 'golden-fish-charm', name: 'Golden Fish Charm', category: 'ACCESSORIES', rarity: 'Epic', price: 2000, description: 'A legendary minted gold fish charm pulsing with deep ocean luck.', statModifier: '+25% Gold gains', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/golden_fish_charm_1779419321452.png' },
+        { id: 'crystal-core', name: 'Crystal Core', category: 'ACCESSORIES', rarity: 'Epic', price: 1500, description: 'A hovering high-tech bioluminescent core with floating nodes.', statModifier: 'Scan Hidden Caches', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/crystal_core_1779419339520.png' },
+        { id: 'planet-orb', name: 'Astral Planet Sphere', category: 'ACCESSORIES', rarity: 'Legendary', price: 4000, description: 'Exquisite brass planetarium ring enclosing a spinning cosmos sphere.', statModifier: 'Double Habit Luck', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/planet_orb_1779419359230.png' },
+        { id: 'wooden-boat', name: 'Wooden Boat', category: 'BOAT', rarity: 'Common', price: 100, description: 'A classic timber skip with standard retro cloth sail rig.', statModifier: 'Explore Calm Lakes', unlocked: true, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/wooden_boat_1779419385279.png' },
+        { id: 'river-boat', name: 'River Boat', category: 'BOAT', rarity: 'Common', price: 1200, description: 'Flat-bottom wooden skipper with canvas awning designed for rivers.', statModifier: 'Traverse Rocky Rivers', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/river_boat_1779419401983.png' },
+        { id: 'deep-sea-vessel', name: 'Deep Sea Vessel', category: 'BOAT', rarity: 'Epic', price: 4500, description: 'Commercial steel-hulled trawler equipped with radio mast and sonars.', statModifier: 'Access Blue Open Ocean', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/deep_sea_vessel_1779418762588.png' },
+        { id: 'abyss-submarine', name: 'Abyss Submarine', category: 'BOAT', rarity: 'Legendary', price: 8000, description: 'Reinforced naval dark submarine with bioluminescent circular windows.', statModifier: 'Dive Core Abyssal Void', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/abyss_submarine_1779418695423.png' }
+      ];
+
+      const MAP_ZONES = [
+        { id: 'calm-lake', name: 'Calm Lake', minLevel: 1, maxLevel: 10, description: 'Cozy, sun-drenched shallow waters. Perfect environment to learn tracking basics.', totalSpecies: 4, caughtSpecies: 0, image: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=400&auto=format&fit=crop', status: 'COMPLETE', glowType: 'calm' },
+        { id: 'restless-river', name: 'Restless River', minLevel: 11, maxLevel: 25, description: 'Gushing rocky rapids and thick currents. Demands excellent rod stamina.', totalSpecies: 3, caughtSpecies: 0, image: 'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?q=80&w=400&auto=format&fit=crop', status: 'CURRENTLY HERE', glowType: 'river' },
+        { id: 'mirror-lake', name: 'Mirror Lake', minLevel: 26, maxLevel: 40, description: 'Stunning crystal mirror waters where high sky meets reflection. Magical things lie beneath.', totalSpecies: 2, caughtSpecies: 0, image: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=400&auto=format&fit=crop', status: 'UNLOCKED', glowType: 'mirror' },
+        { id: 'deep-sea', name: 'Deep Sea', minLevel: 41, maxLevel: 60, description: 'Immense depths under heavy winds. Requires a professional steel vessel trawler configuration.', totalSpecies: 2, caughtSpecies: 0, image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=400&auto=format&fit=crop', status: 'LOCKED', glowType: 'none' },
+        { id: 'the-abyss', name: 'The Abyss', minLevel: 61, maxLevel: 100, description: 'A completely dark oceanic void. Only pressure-shielded submersibles can dive here.', totalSpecies: 2, caughtSpecies: 0, image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=400&auto=format&fit=crop', status: 'MYSTERIOUS', glowType: 'none' }
+      ];
+
+      const AVATAR_STAGES = [
+        { rank: 'CHILD', title: 'Novice Kitten Angler', minLevel: 1, description: 'Just dipping your paws in tracking basics. Features a ridiculously oversized bucket hat, a wide-eyed curious expression, and a small training rod.', traits: ['Oversized Hat', 'Curious Expression', 'Small Rod'], imagePath: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/avatar_cat_child_1779968354424.png' },
+        { rank: 'TEEN', title: 'Adolescent Swift Angler', minLevel: 11, description: 'Developing reflexes to battle heavy river currents. Features a lanky teenage build, a slightly awkward determined pose, and scuffed beginner gear.', traits: ['Lanky Build', 'Awkward Pose', 'Scuffed Gear'], imagePath: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/avatar_cat_teen_1779968376066.png' },
+        { rank: 'ADULT', title: 'Rugged Coastal Angler', minLevel: 26, description: 'Unlocking mirror lakes and ocean shallows with steady focus. Features a full rugged build, grizzled orange fur, weathered gear, and a sharp gaze.', traits: ['Rugged Build', 'Grizzled Fur', 'Weathered Gear'], imagePath: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/avatar_cat_adult_1779968403045.png' },
+        { rank: 'MASTER', title: 'Abyssal Grandmaster Cat', minLevel: 41, description: 'The supreme angler lord who commands the terrifying depths. Majestic posture seated on a heavy wooden crate, surrounded by multiple catches.', traits: ['Grizzled Legend', 'Titan Build', 'Bountiful Catches'], imagePath: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/avatar_cat_master_1779968426297.png' }
+      ];
+
+      const getLevelFromXp = (xp) => Math.floor(xp / 100) + 1;
+
+      // -------------------------------------------------------------
+      // CUSTOM HOOKS & CONTEXT MANAGEMENT
+      // -------------------------------------------------------------
+      const GameContext = createContext(null);
+
+      export function GameProvider({ children }) {
+        const [user, setUser] = useState(null);
+        const [loading, setLoading] = useState(true);
+        const [toasts, setToasts] = useState([]);
+        const [nextFishId, setNextFishId] = useState(null);
+
+        const [profile, setProfile] = useState({
+          uid: 'local_user', displayName: 'Guest Angler',
+          photoURL: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAsZkEaXyciXhP35LEGB2OunyUAYUl5a7Nc3H6M_zolzS650DEpwfBLgIiLGR2Y9Yl8nDu1mkC8Nbqx-dtC63vIlmNHoVBgWa9bIphAT0v99vvSN3BirFDscr4okZXOoAg7yvNN2gOdgwpS-vwviqUyurbtailIvg6p2BOIMRqeuDx2jUywIa-8DLUgYAVsCLSeba1QFmI0sWQLaqKtIhzlPcqWg5K30HGyZxZOmmVSKmmMwGJOuphPOWxvwz1idAxRzu3q6hwVbVk',
+          gold: 1250, xp: 150, level: 2, streak: 3,
+          lastActiveDate: new Date().toISOString().split('T')[0],
+          equippedRod: 'basic-driftwood-rod', purchasedRods: ['basic-driftwood-rod'],
+          selectedZone: 'restless-river', weather: 'Rainy'
+        });
+
+        const [habits, setHabits] = useState(DEFAULT_HABITS);
+        const [codex, setCodex] = useState(ALL_FISH_SPECIES);
+        const [shop, setShop] = useState(SHOP_ITEMS);
+        const [zones, setZones] = useState(MAP_ZONES);
+        const [logs, setLogs] = useState([]);
+
+        const showToast = (message, type = 'success', icon = '') => {
+          const id = Date.now().toString() + Math.random().toString(36).substring(2, 7);
+          setToasts(prev => [...prev, { id, message, type, icon }]);
+          setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4000);
+        };
+
+        const removeToast = (id) => setToasts(prev => prev.filter(t => t.id !== id));
+
+        const login = async () => {
+          try {
+            const res = await signInWithPopup(auth, googleProvider);
+            if (res.user) {
+              showToast(`Welcome back, Hero Angler ${res.user.displayName}!`, 'success', 'sailing');
+            }
+          } catch (err) {
+            console.error("Auth Fail:", err);
+            showToast("Sign in failed. Falling back to local state.", 'error');
+          }
+        };
+
+        const logout = async () => {
+          try {
+            await fbSignOut(auth);
+            showToast("Signed out. Switched back to local guest state.", 'info');
+          } catch (err) {
+            console.error(err);
+          }
+          setUser(null);
+          setProfile({
+            uid: 'local_user', displayName: 'Guest Angler',
+            photoURL: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAsZkEaXyciXhP35LEGB2OunyUAYUl5a7Nc3H6M_zolzS650DEpwfBLgIiLGR2Y9Yl8nDu1mkC8Nbqx-dtC63vIlmNHoVBgWa9bIphAT0v99vvSN3BirFDscr4okZXOoAg7yvNN2gOdgwpS-vwviqUyurbtailIvg6p2BOIMRqeuDx2jUywIa-8DLUgYAVsCLSeba1QFmI0sWQLaqKtIhzlPcqWg5K30HGyZxZOmmVSKmmMwGJOuphPOWxvwz1idAxRzu3q6hwVbVk',
+            gold: 1250, xp: 150, level: 2, streak: 3,
+            lastActiveDate: new Date().toISOString().split('T')[0],
+            equippedRod: 'basic-driftwood-rod', purchasedRods: ['basic-driftwood-rod'],
+            selectedZone: 'restless-river', weather: 'Rainy'
+          });
+          setHabits(DEFAULT_HABITS);
+          setCodex(ALL_FISH_SPECIES);
+          setShop(SHOP_ITEMS);
+          setLogs([]);
+        };
+
+        useEffect(() => {
+          const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            if (currentUser) {
+              setUser(currentUser);
+              const profileRef = doc(db, 'profiles', currentUser.uid);
+              try {
+                const profileSnap = await getDoc(profileRef);
+                if (profileSnap.exists()) {
+                  setProfile({ ...(profileSnap.data()), uid: currentUser.uid, isFirebase: true });
+                } else {
+                  const defaultProf = {
+                    uid: currentUser.uid, displayName: currentUser.displayName || 'Legendary Fisherman',
+                    photoURL: currentUser.photoURL || 'https://lh3.googleusercontent.com/aida-public/AB6AXuAsZkEaXyciXhP35LEGB2OunyUAYUl5a7Nc3H6M_zolzS650DEpwfBLgIiLGR2Y9Yl8nDu1mkC8Nbqx-dtC63vIlmNHoVBgWa9bIphAT0v99vvSN3BirFDscr4okZXOoAg7yvNN2gOdgwpS-vwviqUyurbtailIvg6p2BOIMRqeuDx2jUywIa-8DLUgYAVsCLSeba1QFmI0sWQLaqKtIhzlPcqWg5K30HGyZxZOmmVSKmmMwGJOuphPOWxvwz1idAxRzu3q6hwVbVk',
+                    gold: 1250, xp: 0, level: 1, streak: 1, lastActiveDate: new Date().toISOString().split('T')[0],
+                    equippedRod: 'basic-driftwood-rod', purchasedRods: ['basic-driftwood-rod'],
+                    selectedZone: 'calm-lake', weather: 'Sunny'
+                  };
+                  await setDoc(profileRef, defaultProf);
+                  setProfile({ ...defaultProf, isFirebase: true });
+                  for (const habit of DEFAULT_HABITS) {
+                    await setDoc(doc(db, 'profiles', currentUser.uid, 'habits', habit.id), habit);
+                  }
+                  for (const fish of ALL_FISH_SPECIES) {
+                    await setDoc(doc(db, 'profiles', currentUser.uid, 'codex', fish.id), fish);
+                  }
+                }
+
+                const unsubProfile = onSnapshot(profileRef, (snap) => {
+                  if (snap.exists()) setProfile(prev => ({ ...snap.data(), uid: currentUser.uid, isFirebase: true }));
+                });
+                const unsubHabits = onSnapshot(collection(db, 'profiles', currentUser.uid, 'habits'), (snap) => {
+                  const list = [];
+                  snap.forEach(d => list.push(d.data()));
+                  if (list.length > 0) setHabits(list.sort((a,b) => a.id.localeCompare(b.id)));
+                });
+                const unsubCodex = onSnapshot(collection(db, 'profiles', currentUser.uid, 'codex'), (snap) => {
+                  const list = [];
+                  snap.forEach(d => list.push(d.data()));
+                  if (list.length > 0) setCodex(list.sort((a,b) => a.id.localeCompare(b.id)));
+                });
+                const unsubLogs = onSnapshot(collection(db, 'profiles', currentUser.uid, 'logs'), (snap) => {
+                  const list = [];
+                  snap.forEach(d => list.push({ ...d.data(), id: d.id }));
+                  setLogs(list.sort((a,b) => b.timestamp.localeCompare(a.timestamp)));
+                });
+
+                return () => { unsubProfile(); unsubHabits(); unsubCodex(); unsubLogs(); };
+              } catch (e) {
+                console.error("Firestore Loading Failed:", e);
+              }
+            } else {
+              setUser(null);
+              const localProfile = localStorage.getItem('angler_profile');
+              const localHabits = localStorage.getItem('angler_habits');
+              const localCodex = localStorage.getItem('angler_codex');
+              const localShop = localStorage.getItem('angler_shop');
+              const localLogs = localStorage.getItem('angler_logs');
+              if (localProfile) setProfile(JSON.parse(localProfile));
+              if (localHabits) setHabits(JSON.parse(localHabits));
+              if (localCodex) setCodex(JSON.parse(localCodex));
+              if (localShop) setShop(JSON.parse(localShop));
+              if (localLogs) setLogs(JSON.parse(localLogs));
+            }
+            setLoading(false);
+          });
+          return () => unsubscribe();
+        }, []);
+
+        useEffect(() => {
+          if (!user) {
+            localStorage.setItem('angler_profile', JSON.stringify(profile));
+            localStorage.setItem('angler_habits', JSON.stringify(habits));
+            localStorage.setItem('angler_codex', JSON.stringify(codex));
+            localStorage.setItem('angler_shop', JSON.stringify(shop));
+            localStorage.setItem('angler_logs', JSON.stringify(logs));
+          }
+        }, [profile, habits, codex, shop, logs, user]);
+
+        useEffect(() => {
+          const currentZone = MAP_ZONES.find(z => z.id === profile.selectedZone);
+          if (currentZone) {
+            const zoneFish = codex.filter(f => f.zone === currentZone.name);
+            if (zoneFish.length > 0) {
+              const currentNext = codex.find(f => f.id === nextFishId);
+              if (!currentNext || currentNext.zone !== currentZone.name) {
+                setNextFishId(zoneFish[Math.floor(Math.random() * zoneFish.length)].id);
+              }
+            }
+          }
+        }, [profile.selectedZone, codex, nextFishId]);
+
+        useEffect(() => {
+          const currentLevel = profile.level;
+          const currentZone = profile.selectedZone;
+          const updatedZones = MAP_ZONES.map(z => {
+            const isCurrentlyHere = z.id === currentZone;
+            let status = 'LOCKED';
+            if (currentLevel >= z.minLevel) status = 'UNLOCKED';
+            if (isCurrentlyHere) status = 'CURRENTLY HERE';
+            const zoneFish = codex.filter(f => f.zone === z.name);
+            const caughtCount = zoneFish.filter(f => f.caught).length;
+            const totalCount = zoneFish.length;
+            if (totalCount > 0 && caughtCount === totalCount) status = isCurrentlyHere ? 'CURRENTLY HERE' : 'COMPLETE';
+            if (z.id === 'the-abyss' && currentLevel < z.minLevel) status = 'MYSTERIOUS';
+            else if (currentLevel < z.minLevel) status = 'LOCKED';
+            return { ...z, status, totalSpecies: totalCount, caughtSpecies: caughtCount };
+          });
+          setZones(updatedZones);
+        }, [profile.level, profile.selectedZone, codex]);
+
+        const toggleHabit = async (habitId) => {
+          const habit = habits.find(h => h.id === habitId);
+          if (!habit) return;
+          const newCompleted = !habit.completed;
+          const goldBonus = newCompleted ? habit.rewardGold : -habit.rewardGold;
+          const xpBonus = newCompleted ? habit.rewardXp : -habit.rewardXp;
+
+          const updatedHabits = habits.map(h => h.id === habitId ? { ...h, completed: newCompleted, lastUpdated: new Date().toISOString() } : h);
+          setHabits(updatedHabits);
+
+          const nextXp = Math.max(0, profile.xp + xpBonus);
+          const nextLevel = getLevelFromXp(nextXp);
+          const goldMultiplier = profile.purchasedRods.includes('golden-reel') ? 1.2 : 1.0;
+          const actualGold = Math.round(goldBonus * (goldBonus > 0 ? goldMultiplier : 1.0));
+          const nextGold = Math.max(0, profile.gold + actualGold);
+
+          if (nextLevel > profile.level) showToast(`🏆 LEVEL UP! You reached Level ${nextLevel}!`, 'loot', 'arrow_upward');
+          showToast(newCompleted ? `Completed "${habit.title}"! Got +${habit.rewardXp} XP, +${actualGold}g!` : `Unchecked "${habit.title}".`, newCompleted ? 'success' : 'info');
+
+          setProfile(prev => ({ ...prev, xp: nextXp, level: nextLevel, gold: nextGold }));
+
+          if (newCompleted) {
+            setLogs(prev => [{ id: Date.now().toString(), type: 'habit', message: `Completed daily routine: ${habit.title}.`, timestamp: new Date().toISOString() }, ...prev]);
+          }
+
+          if (user) {
+            try {
+              await updateDoc(doc(db, 'profiles', user.uid), { xp: nextXp, level: nextLevel, gold: nextGold });
+              await updateDoc(doc(db, 'profiles', user.uid, 'habits', habitId), { completed: newCompleted, lastUpdated: new Date().toISOString() });
+              if (newCompleted) {
+                await setDoc(doc(collection(db, 'profiles', user.uid, 'logs')), { type: 'habit', message: `Completed daily routine: ${habit.title}.`, timestamp: new Date().toISOString() });
+              }
+            } catch (err) { console.error(err); }
+          }
+        };
+
+        const buyItem = async (itemId) => {
+          const item = shop.find(i => i.id === itemId);
+          if (!item) return;
+          if (item.price > profile.gold) {
+            showToast(`Not enough gold! You need ${item.price}g.`, 'error', 'lock');
+            return;
+          }
+          const nextGold = profile.gold - item.price;
+          const isRod = item.category === 'RODS';
+          setProfile(prev => ({ ...prev, gold: nextGold, purchasedRods: [...prev.purchasedRods, itemId], equippedRod: isRod ? itemId : prev.equippedRod }));
+          setShop(prev => prev.map(i => i.id === itemId ? { ...i, unlocked: true } : i));
+          showToast(`Successfully purchased ${item.name}!`, 'loot', 'payments');
+          setLogs(prev => [{ id: Date.now().toString(), type: 'purchase', message: `Purchased ${item.name} from item shop.`, timestamp: new Date().toISOString() }, ...prev]);
+
+          if (user) {
+            try {
+              await updateDoc(doc(db, 'profiles', user.uid), { gold: nextGold, purchasedRods: [...profile.purchasedRods, itemId], equippedRod: isRod ? itemId : profile.equippedRod });
+              await setDoc(doc(collection(db, 'profiles', user.uid, 'logs')), { type: 'purchase', message: `Purchased ${item.name} from item shop.`, timestamp: new Date().toISOString() });
+            } catch (err) { console.error(err); }
+          }
+        };
+
+        const travelToZone = async (zoneId) => {
+          const zone = MAP_ZONES.find(z => z.id === zoneId);
+          if (!zone || profile.level < zone.minLevel) return;
+          setProfile(prev => ({ ...prev, selectedZone: zoneId }));
+          showToast(`Set sail to ${zone.name}!`, 'info', 'explore');
+          setLogs(prev => [{ id: Date.now().toString(), type: 'travel', message: `Traveled to ${zone.name} waters.`, timestamp: new Date().toISOString() }, ...prev]);
+
+          if (user) {
+            try {
+              await updateDoc(doc(db, 'profiles', user.uid), { selectedZone: zoneId });
+              await setDoc(doc(collection(db, 'profiles', user.uid, 'logs')), { type: 'travel', message: `Traveled to ${zone.name} waters.`, timestamp: new Date().toISOString() });
+            } catch (err) { console.error(err); }
+          }
+        };
+
+        const castFishLine = async () => {
+          const currentZone = MAP_ZONES.find(z => z.id === profile.selectedZone);
+          if (!currentZone) return;
+          showToast("Casting line... Waiting for a bite...", 'info', 'phishing');
+
+          setTimeout(async () => {
+            const zoneFish = codex.filter(f => f.zone === currentZone.name);
+            let chosen = codex.find(f => f.id === nextFishId && f.zone === currentZone.name) || zoneFish[Math.floor(Math.random() * zoneFish.length)];
+            if (!chosen) return;
+
+            setCodex(prev => prev.map(f => f.id === chosen.id ? { ...f, caught: true, count: f.count + 1 } : f));
+            const baseGold = chosen.rarity === 'Common' ? 50 : chosen.rarity === 'Rare' ? 120 : chosen.rarity === 'Epic' ? 250 : 500;
+            const mult = profile.purchasedRods.includes('golden-reel') ? 1.2 : 1.0;
+            const payouts = Math.round(baseGold * mult);
+
+            const nextGold = profile.gold + payouts;
+            const nextXp = profile.xp + 20;
+            const nextLevel = getLevelFromXp(nextXp);
+
+            setProfile(prev => ({ ...prev, gold: nextGold, xp: nextXp, level: nextLevel }));
+            showToast(`🎉 CAUGHT A FISH! Obtained ${chosen.name} (+${payouts}g, +20 XP!)`, 'loot', 'catching');
+            if (nextLevel > profile.level) showToast(`🏆 LEVEL UP! Reached Level ${nextLevel}!`, 'loot', 'arrow_upward');
+
+            setLogs(prev => [{ id: Date.now().toString(), type: 'catch', message: `Caught ${chosen.name} in ${currentZone.name}.`, timestamp: new Date().toISOString() }, ...prev]);
+
+            if (user) {
+              try {
+                await updateDoc(doc(db, 'profiles', user.uid), { gold: nextGold, xp: nextXp, level: nextLevel });
+                await updateDoc(doc(db, 'profiles', user.uid, 'codex', chosen.id), { caught: true, count: increment(1) });
+                await setDoc(doc(collection(db, 'profiles', user.uid, 'logs')), { type: 'catch', message: `Caught ${chosen.name} in ${currentZone.name}.`, timestamp: new Date().toISOString() });
+              } catch (err) { console.error(err); }
+            }
+          }, 1500);
+        };
+
+        const instantLevelUp = async () => {
+          const nextLevel = profile.level + 1;
+          const nextXp = (nextLevel - 1) * 100;
+          const nextGold = profile.gold + 500;
+          setProfile(prev => ({ ...prev, xp: nextXp, level: nextLevel, gold: nextGold }));
+          showToast(`🏆 INSTANT LEVEL UP! Reached Level ${nextLevel}! +500g!`, 'loot', 'arrow_upward');
+          setLogs(prev => [{ id: Date.now().toString(), type: 'travel', message: `QA Instant Level Up triggered. Level: ${nextLevel}`, timestamp: new Date().toISOString() }, ...prev]);
+
+          if (user) {
+            try {
+              await updateDoc(doc(db, 'profiles', user.uid), { xp: nextXp, level: nextLevel, gold: nextGold });
+              await setDoc(doc(collection(db, 'profiles', user.uid, 'logs')), { type: 'travel', message: `QA Instant Level Up triggered. Level: ${nextLevel}`, timestamp: new Date().toISOString() });
+            } catch (err) { console.error(err); }
+          }
+        };
+
+        return (
+          <GameContext.Provider value={{
+            profile, habits, codex, shop, zones, logs, user, loading, toasts, nextFishId,
+            showToast, removeToast, login, logout, toggleHabit, buyItem, travelToZone, castFishLine, instantLevelUp
+          }}>
+            {children}
+          </GameContext.Provider>
+        );
+      }
+
+      function useGame() {
+        const c = useContext(GameContext);
+        if (!c) throw new Error("Context missing");
+        return c;
+      }
+
+      // -------------------------------------------------------------
+      // SUB-COMPONENTS
+      // -------------------------------------------------------------
+      function HabitCard({ habit, toggleHabit, showToast }) {
+        const [isExpanded, setIsExpanded] = useState(false);
+        const [pomoSecs, setPomoSecs] = useState(1800);
+        const [isPomoActive, setIsPomoActive] = useState(false);
+        const [isSpeedy, setIsSpeedy] = useState(false);
+        const [violinDone, setViolinDone] = useState(() => localStorage.getItem(`sub_violin_${habit.id}`) === 'true');
+        const [hydrationMl, setHydrationMl] = useState(() => parseInt(localStorage.getItem('hydration_ml') || '0', 10));
+        const [pourState, setPourState] = useState(false);
+
+        useEffect(() => {
+          if (habit.id === 'study-session') setPomoSecs(isSpeedy ? 10 : 1800);
+        }, [isSpeedy, habit.id]);
+
+        useEffect(() => {
+          let t;
+          if (isPomoActive) {
+            t = setInterval(() => {
+              setPomoSecs(p => {
+                if (p <= 1) {
+                  setIsPomoActive(false);
+                  if (!habit.completed) toggleHabit(habit.id);
+                  showToast('🍅 Focus complete! Study session logged.', 'success', 'timer');
+                  return isSpeedy ? 10 : 1800;
+                }
+                return p - 1;
+              });
+            }, 1000);
+          }
+          return () => clearInterval(t);
+        }, [isPomoActive, isSpeedy, habit]);
+
+        const changeHydration = (val) => {
+          const cap = Math.min(2000, Math.max(0, val));
+          setHydrationMl(cap);
+          localStorage.setItem('hydration_ml', cap);
+          if (cap >= 2000) {
+            if (!habit.completed) {
+              toggleHabit(habit.id);
+              showToast('💧 Hydration Target Met! 2.0 Liters reacher!', 'success', 'water_drop');
+            }
+          } else if (habit.completed) {
+            toggleHabit(habit.id);
+          }
+        };
+
+        const renderWidget = () => {
+          if (habit.id === 'study-session') {
+            const pct = 100 - (pomoSecs / (isSpeedy ? 10 : 1800)) * 100;
+            return (
+              <div className="mt-3 p-4 bg-[#0a0f1d]/90 rounded-xl border border-slate-800 space-y-3">
+                <div className="flex justify-between items-center border-b border-slate-800 pb-2">
+                  <span className="text-xs font-bold text-[#44e2cd] uppercase">⏱️ Focus Timer</span>
+                  <button onClick={() => setIsSpeedy(!isSpeedy)} className={`text-[10px] px-2 py-0.5 rounded border ${isSpeedy ? 'bg-amber-500/10 text-amber-400 border-amber-500/30' : 'bg-slate-800 text-slate-400 border-slate-700'}`}>
+                    🚀 Speedy (10s)
+                  </button>
+                </div>
+                <div className="flex flex-col items-center py-2">
+                  <div className="relative w-28 h-28 flex items-center justify-center rounded-full bg-slate-950 border border-slate-800">
+                    <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                      <circle cx="50" cy="50" r="45" fill="transparent" stroke="#1e293b" strokeWidth="6" />
+                      <circle cx="50" cy="50" r="45" fill="transparent" stroke="#44e2cd" strokeWidth="6" strokeDasharray="283" strokeDashoffset={283 - (283 * pct) / 100} />
+                    </svg>
+                    <div className="text-center z-10">
+                      <p className="font-mono text-lg font-extrabold text-white">{Math.floor(pomoSecs / 60)}:{(pomoSecs % 60).toString().padStart(2, '0')}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 mt-3">
+                    <button onClick={() => setIsPomoActive(!isPomoActive)} className="px-3 py-1 bg-cyan-950 text-cyan-400 border border-cyan-500/30 rounded text-xs">
+                      {isPomoActive ? 'Pause' : 'Start'}
+                    </button>
+                    <button onClick={() => { setPomoSecs(isSpeedy ? 10 : 1800); setIsPomoActive(false); }} className="px-3 py-1 bg-slate-800 text-white rounded text-xs">
+                      Reset
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+          if (habit.id === 'skill-practice') {
+            return (
+              <div className="mt-3 p-4 bg-[#0a0f1d]/90 rounded-xl border border-slate-800 space-y-2">
+                <p className="text-xs font-bold text-emerald-400 uppercase">📝 Technique Practice Checklist</p>
+                <div onClick={() => {
+                  const state = !violinDone; setViolinDone(state);
+                  localStorage.setItem(`sub_violin_${habit.id}`, String(state));
+                  if (state && !habit.completed) toggleHabit(habit.id);
+                  showToast(state ? '🎻 Violin practice checked!' : 'Violin practice unchecked.', 'info');
+                }} className="p-3 bg-slate-900 border border-slate-850 rounded-xl flex justify-between cursor-pointer active-tap select-none">
+                  <div className="flex gap-2"><span>🎻</span><p className="text-xs font-bold text-white">Violin Dexterity Drills</p></div>
+                  <div className={`w-5 h-5 rounded border ${violinDone ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'border-slate-700'}`}>
+                    {violinDone && <Check className="w-3.5 h-3.5" />}
+                  </div>
+                </div>
+              </div>
+            );
+          }
+          if (habit.id === 'hydration-2l') {
+            const pct = (hydrationMl / 2000) * 100;
+            return (
+              <div className="mt-3 p-4 bg-[#0a0f1d]/90 rounded-xl border border-slate-800 space-y-3">
+                <p className="text-xs font-bold text-cyan-400 uppercase">🧪 Personal Hydration (2.0L Target)</p>
+                <div className="flex justify-center items-center gap-6 py-1">
+                  <div className="flex flex-col items-center">
+                    <div draggable onDragStart={(e) => e.dataTransfer.setData('text', '250')} className="w-14 h-14 bg-cyan-950/20 border border-dashed border-cyan-500/50 rounded-xl flex flex-col justify-center items-center cursor-pointer active-tap">
+                      <span className="material-symbols-outlined text-cyan-400">local_cafe</span>
+                      <span className="text-[9px] font-bold text-cyan-400 mt-1">+250ml</span>
+                    </div>
+                    <button onClick={() => changeHydration(hydrationMl+250)} className="mt-2 text-[10px] text-cyan-450 border border-cyan-800 bg-cyan-950/20 px-2 py-0.5 rounded">Quick Sip</button>
+                  </div>
+                  <div onDragOver={(e)=>e.preventDefault()} onDrop={(e)=>{ changeHydration(hydrationMl+250); }} className="w-20 h-36 rounded-b-2xl rounded-t-lg border-2 border-slate-700 relative overflow-hidden bg-slate-950 flex items-end">
+                    <div className="absolute inset-0 flex flex-col justify-between text-[7px] text-slate-600 font-mono px-1 py-2">
+                      <span>2.0L</span><span>1.5L</span><span>1.0L</span><span>0.5L</span>
+                    </div>
+                    <div className="w-full bg-cyan-500/60 transition-all duration-500" style={{ height: `${pct}%` }}>
+                      {pct >= 100 && <span className="text-[10px] text-white flex justify-center py-2">Full!</span>}
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-1 items-start">
+                    <p className="text-xs font-bold text-white mb-2">{hydrationMl} ml</p>
+                    <input type="range" min="0" max="2000" step="250" value={hydrationMl} onChange={(e)=>changeHydration(parseInt(e.target.value))} className="accent-cyan-400" />
+                    <button onClick={()=>changeHydration(0)} className="text-[10px] text-rose-400 border border-rose-900 bg-rose-950/10 px-2 py-0.5 rounded mt-2">Reset</button>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+          return null;
+        };
+
+        const hasDetails = ['study-session', 'skill-practice', 'hydration-2l'].includes(habit.id);
+
+        return (
+          <div className="flex flex-col w-full">
+            <div onClick={() => hasDetails ? setIsExpanded(!isExpanded) : toggleHabit(habit.id)} className={`flex items-center justify-between p-3.5 rounded-xl transition-all border cursor-pointer active-tap ${habit.completed ? 'bg-[#44e2cd]/10 border-[#44e2cd]/40' : 'bg-[#141b2b]/40 border-[#2e3545]/40 hover:border-slate-700'}`}>
+              <div className="flex flex-col text-left">
+                <span className={`text-sm font-semibold flex items-center gap-1.5 ${habit.completed ? 'text-white' : 'text-[#c5c6cd]'}`}>
+                  {habit.title} {hasDetails && <span className="bg-slate-800 text-[#44e2cd] text-[9px] px-1 rounded uppercase font-bold leading-none">interactive</span>}
+                </span>
+                <span className="text-[9px] uppercase font-bold text-amber-500 tracking-wider mt-0.5">{habit.bonusText}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                {hasDetails && (
+                  <button onClick={()=>{}} className="w-6 h-6 flex justify-center items-center text-slate-500">
+                    {isExpanded ? <ChevronUp className="w-4 h-4"/> : <ChevronDown className="w-4 h-4"/>}
+                  </button>
+                )}
+                <div onClick={(e) => { e.stopPropagation(); toggleHabit(habit.id); }} className={`w-7 h-7 rounded border-2 flex items-center justify-center transition-all ${habit.completed ? 'bg-[#44e2cd]/20 border-[#44e2cd] text-[#44e2cd]' : 'border-slate-700 text-transparent'}`}>
+                  <span className="material-symbols-outlined text-sm font-bold">check</span>
+                </div>
+              </div>
+            </div>
+            {isExpanded && hasDetails && renderWidget()}
+          </div>
+        );
+      }
+
+      function AnglerAvatar({ profile }) {
+        const [viewRanks, setViewRanks] = useState(false);
+        const stage = AVATAR_STAGES.find(s => profile.level >= s.minLevel) || AVATAR_STAGES[0];
+
+        return (
+          <div className="glass-card bg-gradient-to-b from-[#151c2d]/90 to-[#0e1422]/95 border border-[#44e2cd]/20 rounded-2xl p-4 shadow-xl relative overflow-hidden text-left">
+            <div className="absolute top-0 left-0 w-24 h-24 bg-[#44e2cd]/5 rounded-full blur-2xl pointer-events-none" />
+            <div className="flex gap-4 items-center">
+              <div className="relative w-20 h-20 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-center overflow-hidden flex-shrink-0 shadow-md">
+                <img src={stage.imagePath} alt={stage.title} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+                <span className="absolute bottom-1 right-1 bg-slate-900 border border-amber-500/40 text-[#f9bd22] text-[8px] px-1.5 rounded uppercase leading-none font-bold font-mono">{stage.rank}</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] font-mono font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded uppercase tracking-wider">Growth Milestones</span>
+                  <button onClick={() => setViewRanks(!viewRanks)} className="text-[10px] text-[#44e2cd] font-bold">
+                    {viewRanks ? 'Hide Ranks' : 'View Ranks'}
+                  </button>
+                </div>
+                <h3 className="font-serif text-base font-bold text-white mt-1 flex items-center gap-1">
+                  {stage.title} <Sparkles className="w-3.5 h-3.5 text-[#44e2cd] animate-pulse" />
+                </h3>
+                <p className="text-[11px] text-[#c5c6cd] mt-1 pr-2 line-clamp-2 leading-relaxed">{stage.description}</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5 mt-3 pt-2 border-t border-slate-800">
+              <span className="text-[9px] text-slate-500 uppercase font-bold">Active Traits:</span>
+              {stage.traits.map((t, idx) => <span key={idx} className="text-[9px] text-slate-300 bg-slate-850 border border-slate-750 px-2 py-0.5 rounded-full">🐾 {t}</span>)}
+            </div>
+            {viewRanks && (
+              <div className="mt-4 pt-3 border-t border-slate-800 space-y-2">
+                <p className="text-[10px] text-[#44e2cd] font-bold uppercase font-mono">📈 Journey Milestones Progression</p>
+                <div className="flex flex-col gap-2">
+                  {AVATAR_STAGES.map((s, idx) => {
+                    const isCur = s.rank === stage.rank;
+                    const unlocked = profile.level >= s.minLevel;
+                    return (
+                      <div key={idx} className={`p-2.5 rounded-xl border flex gap-3 ${isCur ? 'bg-[#44e2cd]/10 border-[#44e2cd]/40' : unlocked ? 'bg-[#151d30]/30 border-slate-800' : 'bg-slate-950/30 border-slate-900 opacity-60'}`}>
+                        <div className="w-10 h-10 bg-slate-950 border rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center relative">
+                          <img src={s.imagePath} alt={s.title} className={`w-full h-full object-cover ${unlocked ? '' : 'brightness-50 grayscale blur-[1px]'}`} />
+                          {!unlocked && <div className="absolute inset-0 bg-slate-950/75 flex justify-center items-center"><Lock className="w-3.5 h-3.5 text-slate-500" /></div>}
+                        </div>
+                        <div className="flex-1 text-left min-w-0">
+                          <div className="flex justify-between items-baseline">
+                            <p className="text-xs font-bold text-white truncate">{s.title}</p>
+                            <span className="text-[8px] text-amber-500 font-bold">LVL {s.minLevel}+</span>
+                          </div>
+                          <p className="text-[9px] text-slate-400 truncate mt-0.5">{s.traits.join(' • ')}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      // -------------------------------------------------------------
+      // MAIN APP CONTROLLER
+      // -------------------------------------------------------------
+      function MainApp() {
+        const {
+          profile, habits, codex, shop, zones, logs, user, loading, toasts, nextFishId,
+          showToast, removeToast, login, logout, toggleHabit, buyItem, travelToZone, castFishLine, instantLevelUp
+        } = useGame();
+
+        const [activeTab, setActiveTab] = useState('home');
+        const [shopCat, setShopCat] = useState('RODS');
+        const [questsOpen, setQuestsOpen] = useState(false);
+        const [isCasting, setIsCasting] = useState(false);
+
+        const currentZone = zones.find(z => z.id === profile.selectedZone);
+        const zoneFish = currentZone ? codex.filter(f => f.zone === currentZone.name) : [];
+        const nextTargetFish = codex.find(f => f.id === nextFishId) || zoneFish[0];
+
+        const getRarityColor = (r) => {
+          if (r === 'Rare') return 'text-sky-400 bg-sky-950/40 border-sky-850/40';
+          if (r === 'Epic') return 'text-purple-400 bg-purple-950/40 border-purple-850/40';
+          if (r === 'Legendary') return 'text-amber-405 bg-amber-955/40 border-amber-855/40';
+          return 'text-slate-400 bg-slate-900 border-slate-800';
+        };
+
+        const handleCast = async () => {
+          if (isCasting) return;
+          setIsCasting(true);
+          await castFishLine();
+          setTimeout(() => setIsCasting(false), 2000);
+        };
+
+        return (
+          <div className="min-h-screen bg-[#070e1d] flex flex-col items-center justify-center relative select-none md:p-6 p-0 w-full overflow-x-hidden">
+            {/* Ambient Background Grid for Large Screens */}
+            <div className="fixed inset-0 z-0 opacity-15 pointer-events-none hidden md:block" style={{
+              backgroundImage: 'radial-gradient(circle at 50% 10%, #173b54 0%, transparent 60%)',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat'
+            }} />
+
+            {/* Smart Phone Container Mock */}
+            <div className="w-full max-w-md h-screen md:h-[840px] md:rounded-[36px] md:border-[10px] md:border-[#1a243a] md:shadow-[0_24px_50px_rgba(0,0,0,0.8)] bg-[#0c1322] relative flex flex-col overflow-hidden z-10">
+              
+              {/* Header Top Navigation */}
+              <header className="absolute top-0 left-0 right-0 h-18 z-40 bg-[#121a2e]/90 backdrop-blur-xl border-b border-[#44e2cd]/20 px-6 flex items-center justify-between shadow-lg">
+                <div className="flex items-center gap-3">
+                  <div className="relative w-11 h-11 rounded-xl border-2 border-[#44e2cd] overflow-hidden bg-[#141b2b] shadow-inner flex-shrink-0">
+                    <img className="w-full h-full object-cover" src={user ? (user.photoURL || profile.photoURL) : profile.photoURL} alt="Angler avatar" referrerPolicy="no-referrer" />
+                    <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border border-[#0c1322] bg-emerald-500" />
+                  </div>
+                  <div className="flex flex-col text-left">
+                    <div className="flex items-center gap-1">
+                      <span className="font-serif font-bold text-sm text-white max-w-[145px] truncate">{user ? (user.displayName || 'Hero Angler') : profile.displayName}</span>
+                      {user && <span className="bg-[#44e2cd]/20 text-[#44e2cd] text-[8px] font-bold px-1 rounded">Cloud</span>}
+                    </div>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[9px] uppercase font-bold text-[#44e2cd]">LV.{profile.level}</span>
+                      <span className="text-[8px] text-slate-400">{profile.xp % 100}/100 XP</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 bg-[#0a192f]/50 px-2.5 py-1.5 rounded-full border border-[#44e2cd]/20 text-xs">
+                    <Coins className="w-3.5 h-3.5 text-[#f9bd22] animate-bounce" />
+                    <span className="font-serif font-bold text-[#f9bd22]">{profile.gold}g</span>
+                  </div>
+                  {user ? (
+                    <button onClick={logout} className="w-8 h-8 rounded-lg bg-[#232a3a] border border-rose-500/20 text-rose-500 flex items-center justify-center active-tap">
+                      <LogOut className="w-4 h-4" />
+                    </button>
+                  ) : (
+                    <button onClick={login} id="googleSignInBtn" className="w-8 h-8 rounded-lg bg-[#44e2cd]/10 border border-[#44e2cd]/40 text-[#44e2cd] flex items-center justify-center active-tap">
+                      <LogIn className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </header>
+
+              {/* Main Content Layout Body */}
+              <main className="flex-1 overflow-y-auto px-6 pt-22 pb-24 relative z-10 w-full">
+                
+                {activeTab === 'home' && (
+                  <div className="space-y-5 animate-fade">
+                    <div className="grid grid-cols-2 gap-3 mt-2">
+                      <div className="glass-card rounded-2xl p-3 flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-[#44e2cd]/10 border border-[#44e2cd]/20 flex justify-center items-center"><CloudRain className="w-4 h-4 text-[#44e2cd]" /></div>
+                        <div className="text-left">
+                          <p className="text-[8px] text-slate-400 uppercase font-bold">Weather</p>
+                          <p className="text-xs font-serif font-bold text-white">Rain: +25% Gold</p>
+                        </div>
+                      </div>
+                      <div className="glass-card rounded-2xl p-3 flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-[#f9bd22]/10 border border-[#f9bd22]/20 flex justify-center items-center"><Zap className="w-4 h-4 text-[#f9bd22]" /></div>
+                        <div className="text-left">
+                          <p className="text-[8px] text-slate-400 uppercase font-bold">Water Streak</p>
+                          <p className="text-xs font-serif font-bold text-white">{profile.streak} Days Hunt</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="glass-card rounded-2xl p-4 flex items-center gap-3.5 border-l-4 border-[#f9bd22]">
+                      <img className="w-11 h-11 rounded-full border border-amber-500/30 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsZkEaXyciXhP35LEGB2OunyUAYUl5a7Nc3H6M_zolzS650DEpwfBLgIiLGR2Y9Yl8nDu1mkC8Nbqx-dtC63vIlmNHoVBgWa9bIphAT0v99vvSN3BirFDscr4okZXOoAg7yvNN2gOdgwpS-vwviqUyurbtailIvg6p2BOIMRqeuDx2jUywIa-8DLUgYAVsCLSeba1QFmI0sWQLaqKtIhzlPcqWg5K30HGyZxZOmmVSKmmMwGJOuphPOWxvwz1idAxRzu3q6hwVbVk" alt="Sage" />
+                      <div className="text-left">
+                        <h4 className="text-[9px] uppercase font-bold text-amber-500">Mentee's Guidance</h4>
+                        <p className="text-xs text-white italic">"Stay consistent, Angler. The Abyssal Leviathan only bites for those with perfect focus."</p>
+                      </div>
+                    </div>
+
+                    <div className="glass-card bg-[#8b5cf6]/5 border border-[#8b5cf6]/20 rounded-2xl p-4 flex flex-col justify-between items-start gap-2 text-left">
+                      <div>
+                        <h4 className="text-[10px] font-bold text-[#a78bfa] uppercase">🛠️ QA Sandbox Tools</h4>
+                        <p className="text-[11px] text-[#c5c6cd]">Instantly level up, gain +500g, unlock maps, study elements, and rods requirements.</p>
+                      </div>
+                      <button onClick={instantLevelUp} className="w-full flex justify-center items-center gap-1 border border-[#a78bfa]/30 bg-gradient-to-r from-[#8b5cf6] to-[#6366f1] text-white text-xs py-2.5 rounded-xl font-bold active-tap">Instant Level Up!</button>
+                    </div>
+
+                    <AnglerAvatar profile={profile} />
+
+                    <div className="glass-card rounded-2xl p-5 border-2 border-[#44e2cd]/30 shadow-2xl relative overflow-hidden text-left bg-gradient-to-b from-[#191f2f] to-[#121826]">
+                      <span className="text-[8px] bg-[#44e2cd]/10 border border-[#44e2cd]/20 px-2 rounded-full uppercase text-[#44e2cd] tracking-widest font-bold">Active target species</span>
+                      <div className="flex gap-4 justify-between items-start mt-3">
+                        <div>
+                          <h3 className="font-serif text-xl font-bold text-white truncate max-w-[180px]">{nextTargetFish?.name || "Abyssal Serpent"}</h3>
+                          <div className="flex items-center gap-1.5 mt-1">
+                            <span className={`text-[8px] font-bold px-2 rounded border uppercase font-mono ${getRarityColor(nextTargetFish?.rarity)}`}>{nextTargetFish?.rarity}</span>
+                            <span className="text-[9px] text-slate-400 font-bold">{currentZone?.name}</span>
+                          </div>
+                        </div>
+                        <div className="w-16 h-16 bg-slate-950 rounded-xl overflow-hidden flex-shrink-0 flex justify-center items-center border border-slate-800">
+                          <img src={nextTargetFish?.image} alt="Prey icon" className="w-full h-full object-cover" />
+                        </div>
+                      </div>
+                      <div className="mt-4 pt-3 border-t border-slate-800 flex flex-col gap-2">
+                        <p className="text-[10px] text-slate-400 italic">Equipped Rod: <span className="text-white font-bold uppercase">{profile.equippedRod.replace(/-/g, ' ')}</span></p>
+                        <button onClick={handleCast} disabled={isCasting} className="w-full active-tap h-11 bg-gradient-to-r from-[#44e2cd] to-[#00beaa] text-[#003731] font-bold text-xs rounded-xl flex justify-center items-center gap-1 shadow-lg shadow-teal-500/10">
+                          {isCasting ? <span className="animate-spin w-4 h-4 border-2 border-[#003731] border-t-transparent rounded-full" /> : <><Anchor className="w-3.5 h-3.5"/><span>Cast Fishing Line (+20 XP)</span></>}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="glass-card rounded-2xl p-4 text-left">
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="text-xs font-bold text-white uppercase">Area Species (Prey)</span>
+                        <span className="text-[9px] text-[#44e2cd] font-bold uppercase font-mono bg-[#44e2cd]/10 px-2 rounded">{zoneFish.length} species</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        {zoneFish.map(f => (
+                          <div key={f.id} className="p-2 bg-slate-950/40 border border-slate-850 rounded-xl flex items-center gap-2">
+                            <div className="w-8 h-8 rounded bg-slate-950 overflow-hidden border flex-shrink-0 relative">
+                              <img src={f.image} alt={f.name} className={`w-full h-full object-cover ${f.caught ? '' : 'brightness-50 grayscale'}`} />
+                            </div>
+                            <div className="text-left min-w-0">
+                              <p className="text-[10px] font-bold text-white truncate">{f.name}</p>
+                              <span className="text-[8px] font-bold text-slate-400 font-mono block truncate">{f.caught ? `Caught (${f.count})` : 'Uncaught'}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 pb-2">
+                      <button onClick={()=>setQuestsOpen(true)} className="h-12 glass-card rounded-xl font-bold text-[10px] tracking-widest uppercase flex justify-center items-center gap-1.5"><Award className="w-4 h-4 text-amber-500"/>Quest Record</button>
+                      <button onClick={()=>setActiveTab('habits')} className="h-12 bg-[#44e2cd]/10 border border-[#44e2cd]/30 rounded-xl font-bold text-[10px] tracking-widest text-[#44e2cd] uppercase flex justify-center items-center gap-1.5">Habits deck</button>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'habits' && (
+                  <div className="space-y-5 text-left">
+                    <div className="flex justify-between items-center mt-2">
+                      <div>
+                        <h2 className="font-serif text-xl font-bold text-white">Daily Habits Tracker</h2>
+                        <span className="text-[9px] uppercase font-bold text-slate-400">Achieve daily goals to secure stats boosts</span>
+                      </div>
+                    </div>
+                    {['Health', 'Mind', 'Knowledge', 'Technique'].map(cat => {
+                      const catHabits = habits.filter(h => h.category === cat);
+                      return catHabits.length > 0 && (
+                        <div key={cat} className="glass-card rounded-2xl p-4 gap-3 border border-slate-800">
+                          <h3 className="font-serif font-bold text-sm text-[#44e2cd] uppercase mb-3 flex items-center gap-1">🔹 {cat} Synergies</h3>
+                          <div className="space-y-3">
+                            {catHabits.map(h => (
+                              <HabitCard key={h.id} habit={h} toggleHabit={toggleHabit} showToast={showToast} />
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {activeTab === 'codex' && (
+                  <div className="space-y-4 text-left">
+                    <div className="mt-2">
+                      <h2 className="font-serif text-xl font-bold text-white">The Grand Angler's Codex</h2>
+                      <span className="text-[9px] text-slate-400 font-bold uppercase">View collections status record</span>
+                    </div>
+                    <div className="glass-card p-4 rounded-xl flex justify-between items-center bg-slate-900/60 border-slate-800">
+                      <span className="text-[10px] font-bold text-[#44e2cd] uppercase">Collection Progress</span>
+                      <span className="font-serif text-sm font-bold text-white">{codex.filter(f => f.caught).length}/{codex.length} Species</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 pb-8">
+                      {codex.map(f => {
+                        const unlocked = profile.level >= f.levelRequired;
+                        return (
+                          <div key={f.id} className={`glass-card p-3 rounded-xl border flex flex-col justify-between items-center text-center ${f.caught ? 'border-[#44e2cd]/30 bg-[#121a2e]/60' : 'border-[#2e3545]/40 opacity-75 grayscale'}`}>
+                            {f.caught ? (
+                              <>
+                                <div className="w-full h-18 bg-slate-950 rounded border relative overflow-hidden"><img src={f.image} className="w-full h-full object-cover" /></div>
+                                <h4 className="font-serif text-xs font-bold text-white mt-2 truncate w-full">{f.name}</h4>
+                                <span className={`text-[8px] font-bold uppercase ${f.rarity === 'Legendary' ? 'text-amber-400' : 'text-cyan-400'}`}>{f.rarity}</span>
+                              </>
+                            ) : (
+                              <div className="py-6 flex flex-col items-center">
+                                <Lock className="w-6 h-6 text-slate-600 mb-1" />
+                                <h4 className="font-serif text-xs text-slate-500 font-bold">???</h4>
+                                <span className="text-[8px] text-amber-500 font-bold block mt-1 uppercase">{unlocked ? `Hunt inside ${f.zone}` : `Unlock at LVL ${f.levelRequired}`}</span>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'map' && (
+                  <div className="space-y-5 relative text-left">
+                    <div className="mt-2">
+                      <h2 className="font-serif text-xl font-bold text-white">Ocean Voyages</h2>
+                      <span className="text-[9px] text-slate-400 uppercase font-bold">Unlock regions & traverse depths</span>
+                    </div>
+                    <div className="absolute top-16 left-1/2 -translate-x-1/2 w-1 h-[75%] water-trail opacity-20" />
+                    <div className="space-y-3 relative z-10 pb-8">
+                      {zones.map(z => {
+                        const isLocked = z.status === 'LOCKED' || z.status === 'MYSTERIOUS';
+                        return (
+                          <div key={z.id} onClick={() => !isLocked && travelToZone(z.id)} className={`glass-card p-4 rounded-2xl flex items-center gap-4 cursor-pointer active-tap ${z.status === 'CURRENTLY HERE' ? 'border-2 border-[#44e2cd] bg-[#121c2e]' : ''}`}>
+                            <div className="w-14 h-14 bg-slate-900 rounded-xl overflow-hidden flex-shrink-0 relative flex justify-center items-center border">
+                              {isLocked ? <Lock className="w-4 h-4 text-slate-650" /> : <img src={z.image} className="w-full h-full object-cover" />}
+                            </div>
+                            <div className="flex-grow min-w-0">
+                              <div className="flex justify-between items-baseline">
+                                <h3 className="font-serif text-sm font-bold text-white truncate">{z.name}</h3>
+                                <span className="text-[8px] font-bold text-amber-500 font-mono">LVL {z.minLevel}+</span>
+                              </div>
+                              <p className="text-[10px] text-slate-400 mt-1 truncate pr-2">{z.description}</p>
+                              {!isLocked && <span className="text-[8px] text-[#44e2cd] font-bold uppercase mt-1 block">{z.status} • {z.caughtSpecies}/{z.totalSpecies} Prey caught</span>}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'shop' && (
+                  <div className="space-y-5 text-left">
+                    <div className="mt-2 flex justify-between items-end">
+                      <div>
+                        <h2 className="font-serif text-xl font-bold text-white">Tackle Arsenal</h2>
+                        <span className="text-[9px] text-slate-400 uppercase font-bold">Invest coins & refine catches</span>
+                      </div>
+                    </div>
+                    <div className="flex gap-1 overflow-x-auto pb-1">
+                      {['RODS', 'BAIT', 'GEAR', 'ACCESSORIES', 'BOAT'].map(c => (
+                        <button key={c} onClick={()=>setShopCat(c)} className={`text-[9px] font-bold uppercase py-1.5 px-3 rounded-lg border flex-grow ${shopCat === c ? 'bg-[#44e2cd] text-[#003731]' : 'text-slate-450 border-slate-800'}`}>{c}</button>
+                      ))}
+                    </div>
+                    <div className="space-y-3 pb-8">
+                      {shop.filter(i => i.category === shopCat).map(i => {
+                        const owns = profile.purchasedRods.includes(i.id);
+                        return (
+                          <div key={i.id} className="glass-card p-4 rounded-xl flex gap-3">
+                            <div className="w-14 h-14 bg-slate-900 border rounded-lg flex-shrink-0 flex justify-center items-center overflow-hidden">
+                              <img src={i.image} alt="Tackle item" className="w-full h-full object-cover" />
+                            </div>
+                            <div className="flex-grow min-w-0">
+                              <div className="flex justify-between items-start">
+                                <h4 className="text-xs font-bold font-serif text-white truncate">{i.name}</h4>
+                                <span className="text-[10px] font-bold text-[#f9bd22]">{i.price}g</span>
+                              </div>
+                              <p className="text-[10px] text-slate-400 leading-normal mt-1">{i.description}</p>
+                              <div className="flex justify-between items-center mt-2.5 pt-2 border-t border-slate-950">
+                                <span className="text-[9px] font-mono text-[#44e2cd] font-bold uppercase">{i.statModifier}</span>
+                                {owns ? (
+                                  <span className="bg-slate-800 text-[#44e2cd] text-[9px] px-2.5 py-0.5 rounded font-bold uppercase">Secured</span>
+                                ) : (
+                                  <button onClick={()=>buyItem(i.id)} className="px-3 py-1 bg-[#44e2cd] text-[#003731] font-bold rounded text-[10px] uppercase">Purchase</button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+              </main>
+
+              {/* Drawer View Logs */}
+              {questsOpen && (
+                <div className="absolute inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex flex-col justify-end">
+                  <div className="bg-[#0c1322] border-t border-slate-800 rounded-t-3xl max-h-[80%] overflow-y-auto p-5 text-left">
+                    <div className="flex justify-between items-center border-b border-slate-950 pb-3">
+                      <div>
+                        <h4 className="font-serif text-base font-bold text-white">Daily Adventure Logs</h4>
+                        <span className="text-[9px] text-[#44e2cd] uppercase font-bold">Chronicles log file</span>
+                      </div>
+                      <button onClick={()=>setQuestsOpen(false)} className="w-8 h-8 rounded-full bg-slate-900 border border-slate-850 flex justify-center items-center text-[#c5c6cd]">
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="space-y-2 mt-4">
+                      {logs.length === 0 ? <p className="text-xs text-slate-500 italic text-center py-10">Record holds custom routine completes, zones logs, and catches.</p> : logs.map((l, idx)=>(
+                        <div key={idx} className="p-3 bg-slate-950 border border-slate-850 rounded-xl flex gap-2.5 items-start">
+                          <span className="text-sm">📌</span>
+                          <div>
+                            <p className="text-xs text-white uppercase font-bold text-[10px] tracking-wide">{l.type}</p>
+                            <p className="text-xs text-slate-300 mt-0.5 leading-normal">{l.message}</p>
+                            <span className="text-[8px] font-mono text-slate-500 block mt-1">{new Date(l.timestamp).toLocaleTimeString()}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <!-- Toast notification popups -->
+              <div className="absolute top-20 left-4 right-4 z-50 pointer-events-none flex flex-col gap-2">
+                {toasts.map(t => (
+                  <div key={t.id} className="pointer-events-auto bg-[#121a2e]/95 backdrop-blur-xl border border-[#44e2cd]/50 shadow-[0_10px_35px_rgba(0,0,0,0.5)] p-4 rounded-xl flex justify-between items-center gap-3 relative overflow-hidden transition-all duration-300">
+                    <span className="absolute left-0 top-0 bottom-0 w-1 bg-[#44e2cd]" />
+                    <div className="flex items-center gap-2.5">
+                      <span className="material-symbols-outlined text-[#44e2cd]">{t.icon || 'star'}</span>
+                      <p className="text-xs text-white font-medium pr-1 text-left">{t.message}</p>
+                    </div>
+                    <button onClick={()=>removeToast(t.id)} className="text-slate-500 hover:text-[#44e2cd]"><X className="w-3.5 h-3.5"/></button>
+                  </div>
+                ))}
+              </div>
+
+              <!-- Tactile Application Tab Bottom Bar -->
+              <nav className="absolute bottom-0 left-0 right-0 h-22 bg-[#0c1322]/95 backdrop-blur-2xl border-t border-[#44e2cd]/15 flex justify-around items-stretch select-none pb-4 z-40">
+                <button onClick={() => setActiveTab('home')} className={`flex-1 flex flex-col items-center justify-center transition-all ${activeTab === 'home' ? 'text-[#44e2cd] bg-[#44e2cd]/5 border-t-2 border-[#44e2cd]' : 'text-[#c5c6cd]'}`} style={{ minWidth: '44px', minHeight: '44px' }}>
+                  <span className="material-symbols-outlined text-2xl">home</span>
+                  <span className="text-[9px] uppercase font-bold tracking-wider mt-1">Home</span>
+                </button>
+                <button onClick={() => setActiveTab('habits')} className={`flex-1 flex flex-col items-center justify-center transition-all ${activeTab === 'habits' ? 'text-[#44e2cd] bg-[#44e2cd]/5 border-t-2 border-[#44e2cd]' : 'text-[#c5c6cd]'}`} style={{ minWidth: '44px', minHeight: '44px' }}>
+                  <span className="material-symbols-outlined text-2xl">checklist</span>
+                  <span className="text-[9px] uppercase font-bold tracking-wider mt-1">Habits</span>
+                </button>
+                <button onClick={() => setActiveTab('codex')} className={`flex-1 flex flex-col items-center justify-center transition-all ${activeTab === 'codex' ? 'text-[#44e2cd] bg-[#44e2cd]/5 border-t-2 border-[#44e2cd]' : 'text-[#c5c6cd]'}`} style={{ minWidth: '44px', minHeight: '44px' }}>
+                  <span className="material-symbols-outlined text-2xl">menu_book</span>
+                  <span className="text-[9px] uppercase font-bold tracking-wider mt-1">Codex</span>
+                </button>
+                <button onClick={() => setActiveTab('map')} className={`flex-1 flex flex-col items-center justify-center transition-all ${activeTab === 'map' ? 'text-[#44e2cd] bg-[#44e2cd]/5 border-t-2 border-[#44e2cd]' : 'text-[#c5c6cd]'}`} style={{ minWidth: '44px', minHeight: '44px' }}>
+                  <span className="material-symbols-outlined text-2xl">explore</span>
+                  <span className="text-[9px] uppercase font-bold tracking-wider mt-1">Map</span>
+                </button>
+                <button onClick={() => setActiveTab('shop')} className={`flex-1 flex flex-col items-center justify-center transition-all ${activeTab === 'shop' ? 'text-[#44e2cd] bg-[#44e2cd]/5 border-t-2 border-[#44e2cd]' : 'text-[#c5c6cd]'}`} style={{ minWidth: '44px', minHeight: '44px' }}>
+                  <span className="material-symbols-outlined text-2xl">shopping_cart</span>
+                  <span className="text-[9px] uppercase font-bold tracking-wider mt-1">Shop</span>
+                </button>
+              </nav>
+
+            </div>
+          </div>
+        );
+      }
+
+      // Render the App
+      const container = document.getElementById("root");
+      const root = createRoot(container);
+      root.render(
+        <GameProvider>
+          <MainApp />
+        </GameProvider>
+      );
+    </script>
   </body>
 </html>
-
