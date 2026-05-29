@@ -752,7 +752,7 @@
             <div className="w-full max-w-md h-screen md:h-[840px] md:rounded-[36px] md:border-[10px] md:border-[#1a243a] md:shadow-[0_24px_50px_rgba(0,0,0,0.8)] bg-[#0c1322] relative flex flex-col overflow-hidden z-10">
               
               {/* Header Top Navigation */}
-              <header className="absolute top-0 left-0 right-0 h-18 z-40 bg-[#121a2e]/90 backdrop-blur-xl border-b border-[#44e2cd]/20 px-6 flex items-center justify-between shadow-lg">
+              <header className="absolute top-0 left-0 right-0 h-20 z-40 bg-[#121a2e]/90 backdrop-blur-xl border-b border-[#44e2cd]/20 px-6 flex items-center justify-between shadow-lg">
                 <div className="flex items-center gap-3">
                   <div className="relative w-11 h-11 rounded-xl border-2 border-[#44e2cd] overflow-hidden bg-[#141b2b] shadow-inner flex-shrink-0">
                     <img className="w-full h-full object-cover" src={user ? (user.photoURL || profile.photoURL) : profile.photoURL} alt="Angler avatar" referrerPolicy="no-referrer" />
@@ -788,7 +788,7 @@
               </header>
 
               {/* Main Content Layout Body */}
-              <main className="flex-1 overflow-y-auto px-6 pt-22 pb-24 relative z-10 w-full">
+              <main className="flex-1 overflow-y-auto px-6 pt-24 pb-24 relative z-10 w-full">
                 
                 {activeTab === 'home' && (
                   <div className="space-y-5 animate-fade">
