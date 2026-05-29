@@ -86,7 +86,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [profile, setProfile] = useState<PlayerProfile>({
     uid: 'local_user',
     displayName: 'Guest Angler',
-    photoURL: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAsZkEaXyciXhP35LEGB2OunyUAYUl5a7Nc3H6M_zolzS650DEpwfBLgIiLGR2Y9Yl8nDu1mkC8Nbqx-dtC63vIlmNHoVBgWa9bIphAT0v99vvSN3BirFDscr4okZXOoAg7yvNN2gOdgwpS-vwviqUyurbtailIvg6p2BOIMRqeuDx2jUywIa-8DLUgYAVsCLSeba1QFmI0sWQLaqKtIhzlPcqWg5K30HGyZxZOmmVSKmmMwGJOuphPOWxvwz1idAxRzu3q6hwVbVk',
+    photoURL: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780015697/screen_ojoryn.png',
     gold: 1250,
     xp: 150,
     level: 2,
@@ -150,7 +150,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setProfile({
       uid: 'local_user',
       displayName: 'Guest Angler',
-      photoURL: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAsZkEaXyciXhP35LEGB2OunyUAYUl5a7Nc3H6M_zolzS650DEpwfBLgIiLGR2Y9Yl8nDu1mkC8Nbqx-dtC63vIlmNHoVBgWa9bIphAT0v99vvSN3BirFDscr4okZXOoAg7yvNN2gOdgwpS-vwviqUyurbtailIvg6p2BOIMRqeuDx2jUywIa-8DLUgYAVsCLSeba1QFmI0sWQLaqKtIhzlPcqWg5K30HGyZxZOmmVSKmmMwGJOuphPOWxvwz1idAxRzu3q6hwVbVk',
+      photoURL: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780015697/screen_ojoryn.png',
       gold: 1250,
       xp: 150,
       level: 2,
@@ -203,7 +203,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const defaultProf: PlayerProfile = {
               uid: currentUser.uid,
               displayName: currentUser.displayName || 'Legendary Fisherman',
-              photoURL: currentUser.photoURL || 'https://lh3.googleusercontent.com/aida-public/AB6AXuAsZkEaXyciXhP35LEGB2OunyUAYUl5a7Nc3H6M_zolzS650DEpwfBLgIiLGR2Y9Yl8nDu1mkC8Nbqx-dtC63vIlmNHoVBgWa9bIphAT0v99vvSN3BirFDscr4okZXOoAg7yvNN2gOdgwpS-vwviqUyurbtailIvg6p2BOIMRqeuDx2jUywIa-8DLUgYAVsCLSeba1QFmI0sWQLaqKtIhzlPcqWg5K30HGyZxZOmmVSKmmMwGJOuphPOWxvwz1idAxRzu3q6hwVbVk',
+              photoURL: currentUser.photoURL || 'https://res.cloudinary.com/drykhiodx/image/upload/v1780015697/screen_ojoryn.png',
               gold: 1250,
               xp: 0,
               level: 1,

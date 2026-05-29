@@ -100,7 +100,7 @@
       // Lazy Firebase initialization
       const app = initializeApp(firebaseConfig);
       const auth = getAuth(app);
-      const db = getFirestore(app);
+      const db = getFirestore(app, firebaseConfig.databaseId);
       const googleProvider = new GoogleAuthProvider();
       const isFirebaseConfigured = true;
 
@@ -131,27 +131,27 @@
       ];
 
       const SHOP_ITEMS = [
-        { id: 'basic-driftwood-rod', name: 'Basic Driftwood Rod', category: 'RODS', rarity: 'Common', price: 150, description: 'Your very first humble wooden fishing rod.', statModifier: '+0% Catch Rate', unlocked: true, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/basic_rod_1779419084122.png' },
-        { id: 'steel-reinforced-rod', name: 'Steel Reinforced Rod', category: 'RODS', rarity: 'Common', price: 600, description: 'Heavy steel reinforced spine dependable in rough currents.', statModifier: '+10% Area Size', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/reinforced_rod_1779419104601.png' },
-        { id: 'deep-sea-whisperer', name: 'Deep Sea Whisperer', category: 'RODS', rarity: 'Rare', price: 1850, description: 'An advanced turquoise graphite carbon fiber high depth rod.', statModifier: '+30% Catch Rate', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/ocean_rod_1779419124563.png' },
-        { id: 'mythic-celestial-rod', name: 'Mythic Celestial Rod', category: 'RODS', rarity: 'Legendary', price: 5500, description: 'Pulsing with raw celestial energy. Attracts legendary leviathans.', statModifier: '+45% Catch Rate', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/mythic_celestial_rod_1779418670737.png' },
-        { id: 'worm-bait', name: 'Worm Bait', category: 'BAIT', rarity: 'Common', price: 80, description: 'Fresh juicy earthworms irresistible to shallow lake species.', statModifier: '+5% Catch Rate', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/worm_bait_1779419476424.png' },
-        { id: 'seahorse-lure', name: 'Seahorse Lure', category: 'BAIT', rarity: 'Rare', price: 350, description: 'A glowing seahorse decoy that mimics bioluminescent deep-sea food.', statModifier: '+15% Rare Chance', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/seahorse_lure_1779419157958.png' },
-        { id: 'basic-vest', name: 'Basic Vest', category: 'GEAR', rarity: 'Common', price: 250, description: 'Comfortable tan pocketed vest designed for starting out.', statModifier: '+5% XP Gains', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/basic_vest_1779419178600.png' },
-        { id: 'utility-vest', name: 'Utility Vest', category: 'GEAR', rarity: 'Common', price: 800, description: 'A canvas army green vest with deep double-stitched pockets.', statModifier: '+10% XP Gains', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/utility_vest_1779419194362.png' },
-        { id: 'elite-vest', name: 'Elite Vest', category: 'GEAR', rarity: 'Epic', price: 2200, description: 'High-tech navy polymer composite vest tailored for veterans.', statModifier: '+20% XP Gains', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/elite_vest_1779419214726.png' },
-        { id: 'straw-hat-e2c17', name: 'Straw Hat E2C17', category: 'GEAR', rarity: 'Common', price: 200, description: 'Classic rustic woven straw hat offering perfect sun protection.', statModifier: '+5% Stamina Recover', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/straw_hat_1779419238062.png' },
-        { id: 'angler-cap', name: 'Angler Cap', category: 'GEAR', rarity: 'Common', price: 500, description: 'A sturdy athletic blue baseball cap with custom fish logotype.', statModifier: '+10% Zone Size', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/angler_cap_1779419255551.png' },
-        { id: 'legendary-hat', name: 'Legendary Hat', category: 'GEAR', rarity: 'Legendary', price: 3500, description: 'Intricately stitched felt fedora pulsing with a cyan aura.', statModifier: '+25% Reel Control', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/legendary_hat_1779419271294.png' },
-        { id: 'fishing-gloves', name: 'Fishing Gloves', category: 'ACCESSORIES', rarity: 'Common', price: 450, description: 'Grip-reinforced dark leather fingerless gear protecting hands.', statModifier: '+10% Reel Grip', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/fishing_gloves_1779419287838.png' },
-        { id: 'tackle-backpack', name: 'Tackle Backpack', category: 'ACCESSORIES', rarity: 'Common', price: 1000, description: 'Durable brown heavy rucksack with triple gear straps.', statModifier: '+10% Bag Space', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/tackle_backpack_1779419304057.png' },
-        { id: 'golden-fish-charm', name: 'Golden Fish Charm', category: 'ACCESSORIES', rarity: 'Epic', price: 2000, description: 'A legendary minted gold fish charm pulsing with deep ocean luck.', statModifier: '+25% Gold gains', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/golden_fish_charm_1779419321452.png' },
-        { id: 'crystal-core', name: 'Crystal Core', category: 'ACCESSORIES', rarity: 'Epic', price: 1500, description: 'A hovering high-tech bioluminescent core with floating nodes.', statModifier: 'Scan Hidden Caches', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/crystal_core_1779419339520.png' },
-        { id: 'planet-orb', name: 'Astral Planet Sphere', category: 'ACCESSORIES', rarity: 'Legendary', price: 4000, description: 'Exquisite brass planetarium ring enclosing a spinning cosmos sphere.', statModifier: 'Double Habit Luck', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/planet_orb_1779419359230.png' },
-        { id: 'wooden-boat', name: 'Wooden Boat', category: 'BOAT', rarity: 'Common', price: 100, description: 'A classic timber skip with standard retro cloth sail rig.', statModifier: 'Explore Calm Lakes', unlocked: true, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/wooden_boat_1779419385279.png' },
-        { id: 'river-boat', name: 'River Boat', category: 'BOAT', rarity: 'Common', price: 1200, description: 'Flat-bottom wooden skipper with canvas awning designed for rivers.', statModifier: 'Traverse Rocky Rivers', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/river_boat_1779419401983.png' },
-        { id: 'deep-sea-vessel', name: 'Deep Sea Vessel', category: 'BOAT', rarity: 'Epic', price: 4500, description: 'Commercial steel-hulled trawler equipped with radio mast and sonars.', statModifier: 'Access Blue Open Ocean', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/deep_sea_vessel_1779418762588.png' },
-        { id: 'abyss-submarine', name: 'Abyss Submarine', category: 'BOAT', rarity: 'Legendary', price: 8000, description: 'Reinforced naval dark submarine with bioluminescent circular windows.', statModifier: 'Dive Core Abyssal Void', unlocked: false, image: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/abyss_submarine_1779418695423.png' }
+        { id: 'basic-driftwood-rod', name: 'Basic Driftwood Rod', category: 'RODS', rarity: 'Common', price: 150, description: 'Your very first humble wooden fishing rod.', statModifier: '+0% Catch Rate', unlocked: true, image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013620/screen_hwu4rt.png' },
+        { id: 'steel-reinforced-rod', name: 'Steel Reinforced Rod', category: 'RODS', rarity: 'Common', price: 600, description: 'Heavy steel reinforced spine dependable in rough currents.', statModifier: '+10% Area Size', unlocked: false, image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013620/screen_hwu4rt.png' },
+        { id: 'deep-sea-whisperer', name: 'Deep Sea Whisperer', category: 'RODS', rarity: 'Rare', price: 1850, description: 'An advanced turquoise graphite carbon fiber high depth rod.', statModifier: '+30% Catch Rate', unlocked: false, image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013620/screen_hwu4rt.png' },
+        { id: 'mythic-celestial-rod', name: 'Mythic Celestial Rod', category: 'RODS', rarity: 'Legendary', price: 5500, description: 'Pulsing with raw celestial energy. Attracts legendary leviathans.', statModifier: '+45% Catch Rate', unlocked: false, image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013620/screen_hwu4rt.png' },
+        { id: 'worm-bait', name: 'Worm Bait', category: 'BAIT', rarity: 'Common', price: 80, description: 'Fresh juicy earthworms irresistible to shallow lake species.', statModifier: '+5% Catch Rate', unlocked: false, image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013628/screen_lglgm8.png' },
+        { id: 'seahorse-lure', name: 'Seahorse Lure', category: 'BAIT', rarity: 'Rare', price: 350, description: 'A glowing seahorse decoy that mimics bioluminescent deep-sea food.', statModifier: '+15% Rare Chance', unlocked: false, image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013628/screen_lglgm8.png' },
+        { id: 'basic-vest', name: 'Basic Vest', category: 'GEAR', rarity: 'Common', price: 250, description: 'Comfortable tan pocketed vest designed for starting out.', statModifier: '+5% XP Gains', unlocked: false, image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013565/screen_amatbs.png' },
+        { id: 'utility-vest', name: 'Utility Vest', category: 'GEAR', rarity: 'Common', price: 800, description: 'A canvas army green vest with deep double-stitched pockets.', statModifier: '+10% XP Gains', unlocked: false, image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013565/screen_amatbs.png' },
+        { id: 'elite-vest', name: 'Elite Vest', category: 'GEAR', rarity: 'Epic', price: 2200, description: 'High-tech navy polymer composite vest tailored for veterans.', statModifier: '+20% XP Gains', unlocked: false, image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013565/screen_amatbs.png' },
+        { id: 'straw-hat-e2c17', name: 'Straw Hat E2C17', category: 'GEAR', rarity: 'Common', price: 200, description: 'Classic rustic woven straw hat offering perfect sun protection.', statModifier: '+5% Stamina Recover', unlocked: false, image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013565/screen_amatbs.png' },
+        { id: 'angler-cap', name: 'Angler Cap', category: 'GEAR', rarity: 'Common', price: 500, description: 'A sturdy athletic blue baseball cap with custom fish logotype.', statModifier: '+10% Zone Size', unlocked: false, image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013565/screen_amatbs.png' },
+        { id: 'legendary-hat', name: 'Legendary Hat', category: 'GEAR', rarity: 'Legendary', price: 3500, description: 'Intricately stitched felt fedora pulsing with a cyan aura.', statModifier: '+25% Reel Control', unlocked: false, image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013565/screen_amatbs.png' },
+        { id: 'fishing-gloves', name: 'Fishing Gloves', category: 'ACCESSORIES', rarity: 'Common', price: 450, description: 'Grip-reinforced dark leather fingerless gear protecting hands.', statModifier: '+10% Reel Grip', unlocked: false, image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013540/screen_alvczh.png' },
+        { id: 'tackle-backpack', name: 'Tackle Backpack', category: 'ACCESSORIES', rarity: 'Common', price: 1000, description: 'Durable brown heavy rucksack with triple gear straps.', statModifier: '+10% Bag Space', unlocked: false, image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013540/screen_alvczh.png' },
+        { id: 'golden-fish-charm', name: 'Golden Fish Charm', category: 'ACCESSORIES', rarity: 'Epic', price: 2000, description: 'A legendary minted gold fish charm pulsing with deep ocean luck.', statModifier: '+25% Gold gains', unlocked: false, image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013540/screen_alvczh.png' },
+        { id: 'crystal-core', name: 'Crystal Core', category: 'ACCESSORIES', rarity: 'Epic', price: 1500, description: 'A hovering high-tech bioluminescent core with floating nodes.', statModifier: 'Scan Hidden Caches', unlocked: false, image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013540/screen_alvczh.png' },
+        { id: 'planet-orb', name: 'Astral Planet Sphere', category: 'ACCESSORIES', rarity: 'Legendary', price: 4000, description: 'Exquisite brass planetarium ring enclosing a spinning cosmos sphere.', statModifier: 'Double Habit Luck', unlocked: false, image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013540/screen_alvczh.png' },
+        { id: 'wooden-boat', name: 'Wooden Boat', category: 'BOAT', rarity: 'Common', price: 100, description: 'A classic timber skip with standard retro cloth sail rig.', statModifier: 'Explore Calm Lakes', unlocked: true, image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013527/screen_dvgoaf.png' },
+        { id: 'river-boat', name: 'River Boat', category: 'BOAT', rarity: 'Common', price: 1200, description: 'Flat-bottom wooden skipper with canvas awning designed for rivers.', statModifier: 'Traverse Rocky Rivers', unlocked: false, image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013527/screen_dvgoaf.png' },
+        { id: 'deep-sea-vessel', name: 'Deep Sea Vessel', category: 'BOAT', rarity: 'Epic', price: 4500, description: 'Commercial steel-hulled trawler equipped with radio mast and sonars.', statModifier: 'Access Blue Open Ocean', unlocked: false, image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013527/screen_dvgoaf.png' },
+        { id: 'abyss-submarine', name: 'Abyss Submarine', category: 'BOAT', rarity: 'Legendary', price: 8000, description: 'Reinforced naval dark submarine with bioluminescent circular windows.', statModifier: 'Dive Core Abyssal Void', unlocked: false, image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013527/screen_dvgoaf.png' }
       ];
 
       const MAP_ZONES = [
@@ -163,10 +163,10 @@
       ];
 
       const AVATAR_STAGES = [
-        { rank: 'CHILD', title: 'Novice Kitten Angler', minLevel: 1, description: 'Just dipping your paws in tracking basics. Features a ridiculously oversized bucket hat, a wide-eyed curious expression, and a small training rod.', traits: ['Oversized Hat', 'Curious Expression', 'Small Rod'], imagePath: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/avatar_cat_child_1779968354424.png' },
-        { rank: 'TEEN', title: 'Adolescent Swift Angler', minLevel: 11, description: 'Developing reflexes to battle heavy river currents. Features a lanky teenage build, a slightly awkward determined pose, and scuffed beginner gear.', traits: ['Lanky Build', 'Awkward Pose', 'Scuffed Gear'], imagePath: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/avatar_cat_teen_1779968376066.png' },
-        { rank: 'ADULT', title: 'Rugged Coastal Angler', minLevel: 26, description: 'Unlocking mirror lakes and ocean shallows with steady focus. Features a full rugged build, grizzled orange fur, weathered gear, and a sharp gaze.', traits: ['Rugged Build', 'Grizzled Fur', 'Weathered Gear'], imagePath: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/avatar_cat_adult_1779968403045.png' },
-        { rank: 'MASTER', title: 'Abyssal Grandmaster Cat', minLevel: 41, description: 'The supreme angler lord who commands the terrifying depths. Majestic posture seated on a heavy wooden crate, surrounded by multiple catches.', traits: ['Grizzled Legend', 'Titan Build', 'Bountiful Catches'], imagePath: 'https://ais-dev-saatdasqcw3limxqa3ivsh-771528260982.asia-southeast1.run.app/src/assets/images/avatar_cat_master_1779968426297.png' }
+        { rank: 'CHILD', title: 'Novice Kitten Angler', minLevel: 1, description: 'Just dipping your paws in tracking basics. Features a ridiculously oversized bucket hat, a wide-eyed curious expression, and a small training rod.', traits: ['Oversized Hat', 'Curious Expression', 'Small Rod'], imagePath: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780015697/screen_ojoryn.png' },
+        { rank: 'TEEN', title: 'Adolescent Swift Angler', minLevel: 11, description: 'Developing reflexes to battle heavy river currents. Features a lanky teenage build, a slightly awkward determined pose, and scuffed beginner gear.', traits: ['Lanky Build', 'Awkward Pose', 'Scuffed Gear'], imagePath: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780015703/screen_lw6moi.png' },
+        { rank: 'ADULT', title: 'Rugged Coastal Angler', minLevel: 26, description: 'Unlocking mirror lakes and ocean shallows with steady focus. Features a full rugged build, grizzled orange fur, weathered gear, and a sharp gaze.', traits: ['Rugged Build', 'Grizzled Fur', 'Weathered Gear'], imagePath: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780015693/screen_idcd8a.png' },
+        { rank: 'MASTER', title: 'Abyssal Grandmaster Cat', minLevel: 41, description: 'The supreme angler lord who commands the terrifying depths. Majestic posture seated on a heavy wooden crate, surrounded by multiple catches.', traits: ['Grizzled Legend', 'Titan Build', 'Bountiful Catches'], imagePath: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780015253/screen_jtmdqs.png' }
       ];
 
       const getLevelFromXp = (xp) => Math.floor(xp / 100) + 1;
@@ -184,7 +184,7 @@
 
         const [profile, setProfile] = useState({
           uid: 'local_user', displayName: 'Guest Angler',
-          photoURL: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAsZkEaXyciXhP35LEGB2OunyUAYUl5a7Nc3H6M_zolzS650DEpwfBLgIiLGR2Y9Yl8nDu1mkC8Nbqx-dtC63vIlmNHoVBgWa9bIphAT0v99vvSN3BirFDscr4okZXOoAg7yvNN2gOdgwpS-vwviqUyurbtailIvg6p2BOIMRqeuDx2jUywIa-8DLUgYAVsCLSeba1QFmI0sWQLaqKtIhzlPcqWg5K30HGyZxZOmmVSKmmMwGJOuphPOWxvwz1idAxRzu3q6hwVbVk',
+          photoURL: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780015697/screen_ojoryn.png',
           gold: 1250, xp: 150, level: 2, streak: 3,
           lastActiveDate: new Date().toISOString().split('T')[0],
           equippedRod: 'basic-driftwood-rod', purchasedRods: ['basic-driftwood-rod'],
@@ -227,7 +227,7 @@
           setUser(null);
           setProfile({
             uid: 'local_user', displayName: 'Guest Angler',
-            photoURL: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAsZkEaXyciXhP35LEGB2OunyUAYUl5a7Nc3H6M_zolzS650DEpwfBLgIiLGR2Y9Yl8nDu1mkC8Nbqx-dtC63vIlmNHoVBgWa9bIphAT0v99vvSN3BirFDscr4okZXOoAg7yvNN2gOdgwpS-vwviqUyurbtailIvg6p2BOIMRqeuDx2jUywIa-8DLUgYAVsCLSeba1QFmI0sWQLaqKtIhzlPcqWg5K30HGyZxZOmmVSKmmMwGJOuphPOWxvwz1idAxRzu3q6hwVbVk',
+            photoURL: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780015697/screen_ojoryn.png',
             gold: 1250, xp: 150, level: 2, streak: 3,
             lastActiveDate: new Date().toISOString().split('T')[0],
             equippedRod: 'basic-driftwood-rod', purchasedRods: ['basic-driftwood-rod'],
@@ -251,7 +251,7 @@
                 } else {
                   const defaultProf = {
                     uid: currentUser.uid, displayName: currentUser.displayName || 'Legendary Fisherman',
-                    photoURL: currentUser.photoURL || 'https://lh3.googleusercontent.com/aida-public/AB6AXuAsZkEaXyciXhP35LEGB2OunyUAYUl5a7Nc3H6M_zolzS650DEpwfBLgIiLGR2Y9Yl8nDu1mkC8Nbqx-dtC63vIlmNHoVBgWa9bIphAT0v99vvSN3BirFDscr4okZXOoAg7yvNN2gOdgwpS-vwviqUyurbtailIvg6p2BOIMRqeuDx2jUywIa-8DLUgYAVsCLSeba1QFmI0sWQLaqKtIhzlPcqWg5K30HGyZxZOmmVSKmmMwGJOuphPOWxvwz1idAxRzu3q6hwVbVk',
+                    photoURL: currentUser.photoURL || 'https://res.cloudinary.com/drykhiodx/image/upload/v1780015697/screen_ojoryn.png',
                     gold: 1250, xp: 0, level: 1, streak: 1, lastActiveDate: new Date().toISOString().split('T')[0],
                     equippedRod: 'basic-driftwood-rod', purchasedRods: ['basic-driftwood-rod'],
                     selectedZone: 'calm-lake', weather: 'Sunny'
@@ -650,7 +650,7 @@
 
       function AnglerAvatar({ profile }) {
         const [viewRanks, setViewRanks] = useState(false);
-        const stage = AVATAR_STAGES.find(s => profile.level >= s.minLevel) || AVATAR_STAGES[0];
+        const stage = [...AVATAR_STAGES].reverse().find(s => profile.level >= s.minLevel) || AVATAR_STAGES[0];
 
         return (
           <div className="glass-card bg-gradient-to-b from-[#151c2d]/90 to-[#0e1422]/95 border border-[#44e2cd]/20 rounded-2xl p-4 shadow-xl relative overflow-hidden text-left">

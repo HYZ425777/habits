@@ -23,7 +23,7 @@ export const AVATAR_STAGES: AvatarStage[] = [
     minLevel: 1,
     description: 'Just dipping your paws in tracking basics. Features a ridiculously oversized bucket hat, a wide-eyed curious expression, and a small training rod.',
     traits: ['Oversized Hat', 'Curious Expression', 'Small Rod'],
-    imagePath: '/src/assets/images/avatar_cat_child_1779968354424.png'
+    imagePath: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780015697/screen_ojoryn.png'
   },
   {
     rank: 'TEEN',
@@ -31,7 +31,7 @@ export const AVATAR_STAGES: AvatarStage[] = [
     minLevel: 11,
     description: 'Developing reflexes to battle heavy river currents. Features a lanky teenage build, a slightly awkward determined pose, and scuffed beginner gear.',
     traits: ['Lanky Build', 'Awkward Pose', 'Scuffed Gear'],
-    imagePath: '/src/assets/images/avatar_cat_teen_1779968376066.png'
+    imagePath: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780015703/screen_lw6moi.png'
   },
   {
     rank: 'ADULT',
@@ -39,7 +39,7 @@ export const AVATAR_STAGES: AvatarStage[] = [
     minLevel: 26,
     description: 'Unlocking mirror lakes and ocean shallows with steady focus. Features a full rugged build, grizzled orange fur, weathered gear, and a sharp gaze.',
     traits: ['Rugged Build', 'Grizzled Fur', 'Weathered Gear'],
-    imagePath: '/src/assets/images/avatar_cat_adult_1779968403045.png'
+    imagePath: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780015693/screen_idcd8a.png'
   },
   {
     rank: 'MASTER',
@@ -47,7 +47,7 @@ export const AVATAR_STAGES: AvatarStage[] = [
     minLevel: 41,
     description: 'The supreme angler lord who commands the terrifying depths. Majestic posture seated on a heavy wooden crate, surrounded by multiple baskets brimming with fish catches, holding a massive professional deep-sea rod.',
     traits: ['Grizzled Legend', 'Titan Build', 'Bountiful Catches', 'Heavy Tackle'],
-    imagePath: '/src/assets/images/avatar_cat_master_1779968426297.png'
+    imagePath: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780015253/screen_jtmdqs.png'
   }
 ];
 

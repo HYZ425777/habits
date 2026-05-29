@@ -226,7 +226,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     description: 'Your very first humble wooden fishing rod.',
     statModifier: '+0% Catch Rate',
     unlocked: true,
-    image: '/src/assets/images/basic_rod_1779419084122.png'
+    image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013620/screen_hwu4rt.png'
   },
   {
     id: 'steel-reinforced-rod',
@@ -237,7 +237,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     description: 'Heavy steel reinforced spine dependable in rough currents.',
     statModifier: '+10% Area Size',
     unlocked: false,
-    image: '/src/assets/images/reinforced_rod_1779419104601.png'
+    image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013620/screen_hwu4rt.png'
   },
   {
     id: 'deep-sea-whisperer',
@@ -248,7 +248,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     description: 'An advanced turquoise graphite carbon fiber high depth rod.',
     statModifier: '+30% Catch Rate',
     unlocked: false,
-    image: '/src/assets/images/ocean_rod_1779419124563.png'
+    image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013620/screen_hwu4rt.png'
   },
   {
     id: 'mythic-celestial-rod',
@@ -259,7 +259,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     description: 'Pulsing with raw celestial energy. Attracts legendary leviathans.',
     statModifier: '+45% Catch Rate',
     unlocked: false,
-    image: '/src/assets/images/mythic_celestial_rod_1779418670737.png'
+    image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013620/screen_hwu4rt.png'
   },
 
   // --- BAITS (Image 1) ---
@@ -272,7 +272,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     description: 'Fresh juicy earthworms irresistible to shallow lake species.',
     statModifier: '+5% Catch Rate',
     unlocked: false,
-    image: '/src/assets/images/worm_bait_1779419141166.png'
+    image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013628/screen_lglgm8.png'
   },
   {
     id: 'seahorse-lure',
@@ -283,7 +283,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     description: 'A glowing seahorse decoy that mimics bioluminescent deep-sea food.',
     statModifier: '+15% Rare Chance',
     unlocked: false,
-    image: '/src/assets/images/seahorse_lure_1779419157958.png'
+    image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013628/screen_lglgm8.png'
   },
 
   // --- GEAR (Image 3 & 4) ---
@@ -296,7 +296,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     description: 'Comfortable tan pocketed vest designed for starting out.',
     statModifier: '+5% XP Gains',
     unlocked: false,
-    image: '/src/assets/images/basic_vest_1779419178600.png'
+    image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013565/screen_amatbs.png'
   },
   {
     id: 'utility-vest',
@@ -307,7 +307,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     description: 'A canvas army green vest with deep double-stitched pockets.',
     statModifier: '+10% XP Gains',
     unlocked: false,
-    image: '/src/assets/images/utility_vest_1779419194362.png'
+    image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013565/screen_amatbs.png'
   },
   {
     id: 'elite-vest',
@@ -318,7 +318,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     description: 'High-tech navy polymer composite vest tailored for veterans.',
     statModifier: '+20% XP Gains',
     unlocked: false,
-    image: '/src/assets/images/elite_vest_1779419214726.png'
+    image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013565/screen_amatbs.png'
   },
   {
     id: 'straw-hat-e2c17',
@@ -329,7 +329,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     description: 'Classic rustic woven straw hat offering perfect sun protection.',
     statModifier: '+5% Stamina Recover',
     unlocked: false,
-    image: '/src/assets/images/straw_hat_1779419238062.png'
+    image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013565/screen_amatbs.png'
   },
   {
     id: 'angler-cap',
@@ -340,7 +340,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     description: 'A sturdy athletic blue baseball cap with custom fish logotype.',
     statModifier: '+10% Zone Size',
     unlocked: false,
-    image: '/src/assets/images/angler_cap_1779419255551.png'
+    image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013565/screen_amatbs.png'
   },
   {
     id: 'legendary-hat',
@@ -351,7 +351,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     description: 'Intricately stitched felt fedora pulsing with a cyan aura.',
     statModifier: '+25% Reel Control',
     unlocked: false,
-    image: '/src/assets/images/legendary_hat_1779419271294.png'
+    image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013565/screen_amatbs.png'
   },
 
   // --- ACCESSORIES (Image 1 & 4) ---
@@ -364,7 +364,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     description: 'Grip-reinforced dark leather fingerless gear protecting hands.',
     statModifier: '+10% Reel Grip',
     unlocked: false,
-    image: '/src/assets/images/fishing_gloves_1779419287838.png'
+    image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013540/screen_alvczh.png'
   },
   {
     id: 'tackle-backpack',
@@ -375,7 +375,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     description: 'Durable brown heavy oil-skin rucksack with triple gear straps.',
     statModifier: '+10% Bag Space',
     unlocked: false,
-    image: '/src/assets/images/tackle_backpack_1779419304057.png'
+    image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013540/screen_alvczh.png'
   },
   {
     id: 'golden-fish-charm',
@@ -386,7 +386,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     description: 'A legendary minted gold fish charm pulsing with deep ocean luck.',
     statModifier: '+25% Gold gains',
     unlocked: false,
-    image: '/src/assets/images/golden_fish_charm_1779419321452.png'
+    image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013540/screen_alvczh.png'
   },
   {
     id: 'crystal-core',
@@ -397,7 +397,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     description: 'A hovering high-tech bioluminescent core with floating nodes.',
     statModifier: 'Scan Hidden Caches',
     unlocked: false,
-    image: '/src/assets/images/crystal_core_1779419339520.png'
+    image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013540/screen_alvczh.png'
   },
   {
     id: 'planet-orb',
@@ -408,7 +408,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     description: 'Exquisite brass planetarium ring enclosing a spinning cosmos sphere.',
     statModifier: 'Double Habit Luck',
     unlocked: false,
-    image: '/src/assets/images/planet_orb_1779419359230.png'
+    image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013540/screen_alvczh.png'
   },
 
   // --- BOATS (Image 5) ---
@@ -421,7 +421,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     description: 'A classic timber skip with standard retro cloth sail rig.',
     statModifier: 'Explore Calm Lakes',
     unlocked: true,
-    image: '/src/assets/images/wooden_boat_1779419385279.png'
+    image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013527/screen_dvgoaf.png'
   },
   {
     id: 'river-boat',
@@ -432,7 +432,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     description: 'Flat-bottom wooden skipper with canvas awning designed for rivers.',
     statModifier: 'Traverse Rocky Rivers',
     unlocked: false,
-    image: '/src/assets/images/river_boat_1779419401983.png'
+    image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013527/screen_dvgoaf.png'
   },
   {
     id: 'deep-sea-vessel',
@@ -443,7 +443,7 @@ export const SHOP_ITEMS: ShopItem[] = [
     description: 'Commercial steel-hulled trawler equipped with radio mast and sonars.',
     statModifier: 'Access Blue Open Ocean',
     unlocked: false,
-    image: '/src/assets/images/deep_sea_vessel_1779418762588.png'
+    image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013527/screen_dvgoaf.png'
   },
   {
     id: 'abyss-submarine',
@@ -454,8 +454,8 @@ export const SHOP_ITEMS: ShopItem[] = [
     description: 'Reinforced naval dark submarine with bioluminescent circular windows.',
     statModifier: 'Dive Core Abyssal Void',
     unlocked: false,
-    image: '/src/assets/images/abyss_submarine_1779418695423.png'
-  }
+    image: 'https://res.cloudinary.com/drykhiodx/image/upload/v1780013527/screen_dvgoaf.png'
+  },
 ];
 
 export const MAP_ZONES: MapZone[] = [
